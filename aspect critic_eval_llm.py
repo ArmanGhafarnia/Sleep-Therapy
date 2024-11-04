@@ -6,7 +6,7 @@ openai.api_key = "sk-proj-hKcwUS-VTT-R4jwhiKHuz7gtvqaCZaryj5ZlkXhiJCBY6wHIyYZRER
 
 
 class AspectCritic:
-    def __init__(self, aspects: List[dict], model="gpt-4"):
+    def __init__(self, aspects: List[dict], model="gpt-4o"):
         """
         Initialize the evaluator with predefined aspects.
         aspects: List of aspects with names and definitions.
