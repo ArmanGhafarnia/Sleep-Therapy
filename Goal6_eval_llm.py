@@ -48,7 +48,7 @@ class ConversationEvaluator:
                  "content": "You are an expert evaluator in the field of cognitive behavioral therapy for insomnia."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=10,
+            max_tokens=30,
             temperature=0.0
         )
         answer = response['choices'][0]['message']['content'].strip()
