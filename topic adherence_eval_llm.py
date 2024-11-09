@@ -34,7 +34,7 @@ class TopicAdherenceEvaluator:
             try:
                 score = float(response['choices'][0]['message']['content'].strip())
             except ValueError:
-                score = 0.0  # Default to 0 if the response cannot be converted to a float
+                score = 2000.0  # Default to 0 if the response cannot be converted to a float
             adherence_scores.append(score)
 
         # Calculate the average adherence score for the conversation
