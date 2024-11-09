@@ -76,7 +76,7 @@ class ResponseRelevancyEvaluator:
         try:
             score = float(score_str)
         except ValueError:
-            score = 3.0  # Default to a neutral score if parsing fails
+            score = 1.0  # Default to a neutral score if parsing fails
         return score / 5.0  # Normalize to 0-1 range
 
     def evaluate_response(self, user_input: str, therapist_response: str) -> float:
