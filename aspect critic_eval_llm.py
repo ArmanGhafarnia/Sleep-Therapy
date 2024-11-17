@@ -1,29 +1,20 @@
 import openai
 import concurrent.futures
 from typing import List
+from colorama import Fore, Style
 
 openai.api_key = "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"
 
 
 class AspectCritic:
-    def __init__(self, aspects: List[dict], model="gpt-4o"):
-        """
-        Initialize the evaluator with predefined aspects.
-        aspects: List of aspects with names and definitions.
-        model: The LLM model to use for evaluation (default: "gpt-4").
-        """
+    def __init__(self, aspects: List[dict], model="gpt-4o-mini"):
         self.aspects = aspects
         self.model = model
 
     def evaluate_conversation(self, conversation: List[tuple]):
-        """
-        Evaluates only the therapist's responses based on the predefined aspects.
-        conversation: List of user_input and response tuples.
-        """
         responses = [response for _, response in conversation]
         responses_text = "\n".join([f"Response: {response}" for response in responses])
 
-        # Evaluate each aspect in parallel
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_to_aspect = {
                 executor.submit(self._evaluate_aspect, responses_text, aspect): aspect["name"]
@@ -36,10 +27,6 @@ class AspectCritic:
         return aspect_results
 
     def _evaluate_aspect(self, responses_text: str, aspect: dict) -> bool:
-        """
-        Uses an LLM to determine if the therapist's responses align with the defined aspect.
-        Returns True if the responses align with the aspect, otherwise False.
-        """
         aspect_name = aspect["name"]
         aspect_definition = aspect["definition"]
         prompt = f"""
@@ -59,14 +46,11 @@ class AspectCritic:
                 {"role": "system",
                  "content": "You are an assistant that evaluates whether a given set of therapist responses aligns with a specific aspect."},
                 {"role": "user", "content": prompt}
-            ],
-            temperature=0.7
+            ]
         )
         answer = response.choices[0].message['content'].strip().lower()
         return answer == "yes"
 
-
-# Example usage:
 
 # Define the aspects to be evaluated
 aspects = [
@@ -110,6 +94,12 @@ conversation = [
 ]
 
 
+
+
 # Evaluate the therapist's responses for aspect adherence
 aspect_results = critic.evaluate_conversation(conversation)
-print(f"Aspect Critique Results: {aspect_results}\n")
+
+# Print results with colored output
+for aspect, result in aspect_results.items():
+    color = Fore.GREEN if result else Fore.RED
+    print(f"{aspect}:{color} {result}{Style.RESET_ALL}")
