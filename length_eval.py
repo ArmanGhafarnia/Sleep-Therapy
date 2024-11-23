@@ -2,8 +2,8 @@ def length_checker(conversation):
     # Define thresholds
     min_words = 5500
     max_words = 6500
-    min_chars = 33000
-    max_chars = 39000
+    min_chars = 30250
+    max_chars = 35750
 
     # Initialize counts
     total_word_count = 0
@@ -86,18 +86,17 @@ conversation = [
     ("I'll keep practicing. I think I'm starting to understand what works for me.", "That's great progress. Finding what works for you is a journey, and you're making important steps along the way. Let's continue building on these positive changes."),
     ("I really appreciate all your support. It feels good to have a plan.", "You're very welcome. I'm here to support you every step of the way. Having a plan can make a big difference, and you're doing a wonderful job of following through."),
     ("Thank you. I'll keep working on the routine and the diary.", "That sounds perfect. Keep up the good work, and we'll review your progress next time. Remember, small consistent efforts can lead to big changes over time."),
-    ("Okay, I'll see you next week.", "Looking forward to it. Take care, and have a restful week ahead."),
-    ("Thanks, I will.", "You're doing great. Talk to you soon."),
-    ("I tried the body scan exercise and I think it's helping me fall asleep faster.", "That's fantastic to hear. The body scan can be very effective in reducing tension and promoting relaxation. I'm glad it's working for you. How often have you been doing it?"),
-    ("I've been trying to do it every night before bed.", "That's a great approach. Consistency really makes a difference. Over time, your body will start to recognize this as a signal that it's time to wind down and sleep."),
-    ("I also started reading before bed instead of watching TV, and it seems to help.", "That's wonderful progress. Reading is much less stimulating than watching TV, especially if you're reading something calming. It's great that you're noticing positive changes."),
-    ("I still have some nights where I struggle, but overall it feels like it's getting better.", "That's completely normal. Progress isn't always linear, and there will be some ups and downs. The important thing is that you're seeing overall improvement, and you're building healthy habits that will support your sleep in the long term."),
-    ("I've also been cutting back on caffeine like we talked about.", "That's excellent. Reducing caffeine can have a big impact, especially if you're sensitive to it. Keep monitoring how it affects your sleep, and we can make further adjustments if needed."),
-    ("I think it's making a difference. I'm not as restless at night.", "That's a really positive sign. It sounds like you're on the right track. Let's keep focusing on these changes, and we'll continue to fine-tune things as needed."),
-    ("Thank you so much for all your help.", "You're very welcome. You're doing an amazing job, and I'm here to support you every step of the way. Keep up the great work, and I'll see you next time."),
-    ("Okay, see you next week.", "Take care, and have a restful week ahead. You're making great progress.")
+    ("I've also been trying to avoid caffeine, like we talked about, and I think it's helping.", "That's wonderful to hear. Reducing caffeine can definitely make a big difference in your sleep quality. I'm glad you're noticing positive changes."),
+    ("Sometimes I still find it hard to wind down, though. Are there any other techniques I could try?", "Absolutely. In addition to what we've discussed, you might consider practicing yoga or gentle stretching before bed. It can help release physical tension and prepare your body for rest."),
+    ("I haven't tried yoga before, but I'm open to it.", "That's great! You don't need to do anything complicated. Even just a few simple stretches can help. There are also plenty of beginner-friendly videos online that you could follow along with."),
+    ("I'll look into that. I think it could be helpful.", "I'm glad to hear that. Remember, the goal is to create a routine that helps signal your body that it's time to rest. Yoga can be a great addition to that routine."),
+    ("I've also noticed that when I write down my thoughts before bed, it helps me feel less anxious.", "That's an excellent strategy. Journaling can be a very effective way to clear your mind and reduce anxiety before sleep. It helps to get those thoughts out of your head and onto paper."),
+    ("Sometimes I worry that I'm not making progress fast enough.", "It's completely normal to feel that way, but remember that progress is often gradual. The fact that you're making changes and noticing even small improvements is a big step forward."),
+    ("I guess you're right. I do feel a bit better overall.", "That's wonderful to hear. Celebrate those small victories. Each positive change brings you closer to better sleep."),
+    ("I'll keep working on it. Thank you for all your support.", "You're very welcome. You're doing a fantastic job, and I'm here to support you every step of the way. Keep up the great work.")
 ]
 
 # Run the length checker
 evaluation_result = length_checker(conversation)
 print(evaluation_result)
+
