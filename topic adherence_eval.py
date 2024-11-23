@@ -30,11 +30,11 @@ class TopicAdherenceEvaluator:
         recall = recall_score(adherence_labels, prediction_labels, zero_division=1)
         f1 = f1_score(adherence_labels, prediction_labels, zero_division=1)
 
-        # Calculate a single metric for topic adherence (e.g., F1 score)
-        topic_adherence_score = f1
-
+        # Convert scores to Python floats for cleaner output
         return {
-            "topic_adherence_score": topic_adherence_score
+            "precision": float(precision),
+            "recall": float(recall),
+            "f1": float(f1)
         }
 
 # Example usage:
@@ -66,6 +66,7 @@ conversation = [
 ]
 
 
+
 # Define reference topics (sleep therapy in this case)
 reference_topics = ["sleep", "sleep habits", "insomnia", "bedtime routine", "relaxation", "sleep therapy", "meditation", "deep breathing", "herbal tea", "melatonin", "sleep environment", "consistent sleep", "caffeine"]
 
@@ -74,4 +75,4 @@ evaluator = TopicAdherenceEvaluator(reference_topics)
 
 # Evaluate the conversation for topic adherence
 score = evaluator.evaluate_conversation(conversation)
-print(f"Topic Adherence Score: {score}")
+print(f"Topic Adherence Scores: {score}")
