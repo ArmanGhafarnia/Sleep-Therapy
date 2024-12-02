@@ -9,7 +9,7 @@ from scipy.stats import spearmanr
 import time
 
 # Initialize OpenAI
-openai.api_key = "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"
+openai.api_key = "sk-proj-RNnrhY8CT2tWPIK7R2iTT3BlbkFJFWgbYOz4bFhFUHtPabTy"
 
 # Load a pre-trained SentenceTransformer model for embedding extraction
 sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -105,7 +105,7 @@ class ResponseRelevancyEvaluator:
         )
         try:
             completion = openai.ChatCompletion.create(
-                model="gpt-4o-mini",
+                model="gpt-4o",
                 messages=[
                     {"role": "system",
                      "content": "You are a helpful assistant for curing insomnia with sleep therapy. Evaluate the response based on relevance, specificity, and how actionable it is."},
@@ -158,17 +158,19 @@ class ResponseRelevancyEvaluator:
 # Example usage
 evaluator = ResponseRelevancyEvaluator(max_workers=4)
 conversation = [
-   ("I have trouble falling asleep at night.", "It sounds like you might be experiencing some anxiety or stress that's affecting your ability to fall asleep. Have you tried any relaxation techniques before bed, like deep breathing or progressive muscle relaxation?"),
-   ("I wake up frequently during the night and can't fall back asleep.", "Waking up frequently can often be related to stress or an inconsistent sleep schedule. It might help to establish a consistent bedtime routine and avoid caffeine or heavy meals before bed."),
-   ("I often feel tired during the day even after sleeping for 8 hours.", "Feeling tired during the day despite sleeping for 8 hours could mean that your sleep quality is being affected. Have you considered factors like noise, light, or room temperature that might be impacting your sleep quality?"),
-   ("I feel restless when I try to sleep, and my mind keeps racing.", "Racing thoughts are a common cause of restlessness at night. It might help to write down your thoughts in a journal before bed to clear your mind. You could also try mindfulness meditation to focus on the present moment."),
-   ("I sometimes wake up with a headache. Could that be related to my sleep?", "Waking up with a headache can sometimes be a sign of poor sleep posture or sleep apnea. It might be helpful to talk to your doctor about this and consider adjusting your sleeping position or pillows."),
-   ("I have trouble falling asleep when I'm stressed about work.", "Work-related stress can definitely impact sleep. Creating a boundary between work and rest is important. Try setting aside time in the evening to unwind with an activity you enjoy, and practice some deep breathing exercises to help relax."),
-   ("I often sleep late on weekends and find it hard to get up on weekdays.", "Irregular sleep schedules, like staying up late on weekends, can disrupt your body's internal clock. It might be helpful to maintain a consistent sleep schedule, even on weekends, to make waking up on weekdays easier."),
-   ("I can't sleep if I take naps during the day. What should I do?", "Daytime naps can interfere with your ability to fall asleep at night, especially if they are long or late in the day. If you need to nap, try to keep it under 30 minutes and take it earlier in the afternoon."),
-   ("I feel anxious about not getting enough sleep, and it makes it even harder to sleep.", "Anxiety about sleep can create a cycle that makes it harder to fall asleep. It might help to focus on creating a relaxing bedtime routine and remind yourself that one night of poor sleep doesn't define your overall sleep health. Cognitive behavioral techniques can also be effective in reducing sleep-related anxiety."),
-   ("I wake up feeling unrefreshed, even though I sleep through the night.", "Feeling unrefreshed might indicate that your sleep quality is not optimal. Factors like undiagnosed sleep disorders, poor sleep environment, or even diet can contribute. It might be worth evaluating these aspects to improve your sleep quality.")
+   ("I have trouble falling asleep at night.", "You should consider starting a new hobby like painting or knitting."),
+   ("I wake up frequently during the night and can't fall back asleep.", "It's good to drink plenty of water throughout the day."),
+   ("I often feel tired during the day even after sleeping for 8 hours.", "Have you tried going for a morning jog?"),
+   ("I feel restless when I try to sleep, and my mind keeps racing.", "You might enjoy visiting new places on weekends."),
+   ("I sometimes wake up with a headache. Could that be related to my sleep?", "Eating more fruits and vegetables might help you feel better."),
+   ("I have trouble falling asleep when I'm stressed about work.", "Listening to upbeat music can be a great way to energize your mornings."),
+   ("I often sleep late on weekends and find it hard to get up on weekdays.", "It might be helpful to take up gardening."),
+   ("I can't sleep if I take naps during the day. What should I do?", "Reading books can be a great way to spend your free time."),
+   ("I feel anxious about not getting enough sleep, and it makes it even harder to sleep.", "Trying out new recipes in the kitchen could be fun."),
+   ("I wake up feeling unrefreshed, even though I sleep through the night.", "Joining a community group might give you more motivation.")
 ]
+
+
 
 
 

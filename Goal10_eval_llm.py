@@ -6,7 +6,7 @@ class ConversationEvaluator:
     def __init__(self, goals: List[str], goal_names: List[str]):
         self.goals = goals
         self.goal_names = goal_names
-        openai.api_key = "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"
+        openai.api_key = "sk-proj-RNnrhY8CT2tWPIK7R2iTT3BlbkFJFWgbYOz4bFhFUHtPabTy"
 
     def evaluate_conversation(self, conversation: List[tuple]) -> Dict[str, Dict[str, object]]:
         """
@@ -43,7 +43,7 @@ class ConversationEvaluator:
         Please respond with "Achieved" if the goal has been achieved, or "Not Achieved" if the goal has not been achieved.
         """
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0125",
+            model="gpt-4o",
             messages=[
                 {"role": "system",
                  "content": "You are an expert evaluator in the field of cognitive behavioral therapy for insomnia."},

@@ -2,7 +2,7 @@ import openai
 import concurrent.futures
 
 # Initialize the API key
-openai.api_key = "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"
+openai.api_key = "sk-proj-RNnrhY8CT2tWPIK7R2iTT3BlbkFJFWgbYOz4bFhFUHtPabTy"
 
 
 # Conversation format: conversation = [("message from person 1"), ("message from person 2"), ...]
@@ -20,7 +20,7 @@ def evaluate_conversation_stay_on_track(conversation):
         context = "\n".join(previous_messages)
 
         patient_response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             messages=[
                 {"role": "system",
                  "content": "You are an evaluator that determines if a patient's statement is off-topic in a sleep therapy session. The context of the conversation is provided to help you decide. Note that closing remarks such as 'thank you', 'take care', or 'see you next week' are considered on-topic if they are part of the natural conversation flow."},
@@ -33,7 +33,7 @@ def evaluate_conversation_stay_on_track(conversation):
         if "no" in patient_evaluation:
             # Use LLM to determine if the therapist's response brings the conversation back on track
             redirection_response = openai.ChatCompletion.create(
-                model="gpt-4o-mini",
+                model="gpt-4o",
                 messages=[
                     {"role": "system",
                      "content": "You are an evaluator that determines if a therapist's response successfully redirects the conversation back to sleep therapy. The context of the conversation is provided to help you decide. Note that closing remarks such as 'thank you', 'take care', or 'see you next week' are considered acceptable and on-topic as part of the natural conversation flow."},
@@ -127,6 +127,8 @@ conversation = [
    ("Sounds good. I feel a bit better already.",
     "I’m glad to hear that. You’re doing a great job by being open and willing to make changes. Let’s keep working on this together.")
 ]
+
+
 
 
 

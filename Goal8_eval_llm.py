@@ -6,7 +6,7 @@ class ConversationEvaluator:
     def __init__(self, goals: List[str], goal_names: List[str]):
         self.goals = goals
         self.goal_names = goal_names
-        openai.api_key = "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"
+        openai.api_key = "sk-proj-RNnrhY8CT2tWPIK7R2iTT3BlbkFJFWgbYOz4bFhFUHtPabTy"
 
     def evaluate_conversation(self, conversation: List[tuple]) -> Dict[str, Dict[str, object]]:
         """
@@ -43,7 +43,7 @@ class ConversationEvaluator:
         Please respond with "Achieved" if the goal has been achieved, or "Not Achieved" if the goal has not been achieved.
         """
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0125",
+            model="gpt-4o",
             messages=[
                 {"role": "system",
                  "content": "You are an expert evaluator in the field of cognitive behavioral therapy for insomnia."},
@@ -78,45 +78,32 @@ goals = [
 ]
 
 conversation = [
-    ("Good evening, Dr. I've been trying the things we discussed, but honestly, I feel like nothing's really working. I'm still waking up multiple times at night and it's really frustrating.",
-     "Good evening! I'm really sorry to hear that. Let's start by taking a look at your sleep diary to see if there's anything we can spot together that might help us understand what's going on.")
-    ,
-    ("Yeah, here it is. I mean, you can see that most nights I'm waking up around 3 AM, and then I just can't seem to fall back asleep for hours.",
-     "Right, I do see that pattern. It must be very exhausting to have such frequent wake-ups. What do you typically do when you wake up at that time?")
-    ,
-    ("Honestly, I just lie there and hope I fall back asleep. But after a while, I usually get frustrated and pick up my phone to scroll through social media until I feel tired again.",
-     "I understand. It can be very tempting to use your phone to pass the time, but unfortunately, the blue light from screens can make it even harder to get back to sleep.")
-    ,
-    ("Yeah, I know it's not helping, but I just don't know what else to do. Lying there in the dark just feels so frustrating.",
-     "I get it. Maybe we could think of an alternative activity. Something less stimulating like reading a book or listening to calming music might be a good idea."),
-    ("I could try reading, but honestly, when I wake up like that, I just feel stuck in bed and don't want to get up.",
-     "That's understandable. Sometimes getting out of bed is the last thing you want to do when you're tired. It might help, though, if you prepare something relaxing ahead of time—maybe leave a book on the nightstand to make it easier.")
-    ,
-    ("I guess I could try that. It's just so hard to think straight in the middle of the night.",
-     "Of course. That's why planning ahead could make it easier to do in the moment. Let's also check in on your bedtime routine—how have evenings been for you?")
-    ,
-    ("Well, I try to keep things calm, but I still end up working on my laptop a lot. I know I shouldn't, but I just have a lot to do.",
-     "I completely understand. It can be difficult to avoid work in the evenings, especially if you have a lot on your plate. Maybe cutting back just a little bit or setting a specific end time for work could help."),
-    ("I can try, but honestly, it's tough. There's just so much to do, and I feel like I need to catch up.",
-     "That makes sense. Even just a small reduction might help over time. Do you do anything specific to help you unwind after work?")
-    ,
-    ("Not really. I usually just watch TV until I feel sleepy.",
-     "TV can be relaxing, but sometimes the content or the light can interfere with winding down. Maybe we could swap in some reading or listening to music as a wind-down activity?")
-    ,
-    ("I don't know. TV is just what I've always done, and I don't think I have the energy to change that right now.",
-     "That’s totally fair. We don't have to change everything at once. Let’s keep TV if it works for you, but perhaps try lowering the brightness or choosing more calming shows.")
-    ,
-    ("Okay, I could do that. Should I still be trying to get up at the same time every day?",
-     "Yes, consistency with wake time is still important. But I understand it can be tough, especially when sleep is so broken. Just do your best, and we'll adjust as needed.")
-    ,
-    ("Alright. I feel like I keep trying, but I'm not seeing much improvement.",
-     "It can be a slow process, and it's natural to feel frustrated. Even small changes can eventually lead to improvement, so let's keep taking it step by step."),
-    ("Yeah, I just hope it starts to get better soon. I’m tired of being tired all the time.",
-     "I hear you, and I know it’s hard. We’re in this together, and I’m confident that things will improve. Let’s keep tracking what we can in the sleep diary and see what we learn over the next week.")
-    ,
-    ("Alright. Thanks for listening, Dr. I’ll keep trying.",
-     "You’re welcome. I know you’re doing your best, and that matters. Let’s touch base again next week and see if anything shifts.")
+    ("no, but I don’t have any other choice because of her snoring.", "So you would like to sleep together, but you worry that her snoring would wake you up?"),
+    ("yes. It’s sad we’re apart. It upsets my wife, too. She was OK with my snoring, and she is OK with the CPAP. We just talked about it last week.", "do you sleep better apart?"),
+    ("I am not sure any more. But when I was sharing a bed with her, I’d be lying there awake in the middle of the night. Sometimes I could hear her snore, and I wondered if her snoring had woken me up.", "Sounds like you think that sleep needs to be approached with extreme caution. you are trying to remove anything that could upset the balance."),
+    ("Well . . . yes.", "I wonder what this says about your confidence as a sleeper."),
+    ("I am the world’s worst sleeper, so I don’t think confidence is the issue. no one would feel confident about sleeping if they slept like me.", "from what you have shared with me so far, you have put a lot of effort into improving your sleep—doing things like reducing activities that you enjoy, and spending a lot of time tracking your sleep. Unfortunately, it doesn’t look like your efforts are being rewarded with your desired “payoff” of more sleep. Why do you think this is?"),
+    ("That’s right. It’s depressing. But last week I started doing a little more.", "yes, you did. In some ways you have been putting a little less effort into sleeping, and you have been sleeping more. Why do you think that is?"),
+    ("I can’t say I know.", "let’s take an analogy of falling in love. falling asleep is like falling in love. you can set the stage, by being in places where you are likely to meet someone who shares your interests and values, but you can’t make falling in love happen. In fact, the more you try to force it, the more impossible it is. The same applies to sleep: you can set the stage, but you cannot force it. Setting the stage for good sleep involves following good sleep habits, being more active during the day, and using the CPAP."),
+    ("I think that last week I set a better stage than before.", "yes. That’s true. and you also put in less effort to fall asleep. The next step is to accept the ebb and flow of sleep and put in even less effort. Simply allow sleep to unfold."),
+    ("I have pain, and obviously my sleep system is impaired, so it sounds like you want me to just accept that I am a poor sleeper?", "let’s take a look at how your sleep quality has changed. let’s compare your sleep diary summary from the last 2 weeks again to the summary from the previous two weeks. What do you notice about your sleep efficiency?"),
+    ("It increased from 50 to 80%.", "This is a remarkable improvement. and you kept the sleep medication the same, so the medication is probably not what made the difference. all that changed was setting a better stage for your body to sleep better, and what happened? you slept better."),
+    ("can it get even better?", "We can expect it to improve even more, but I think that you have lacked confidence that your body would take care of your sleep, if the stage is set correctly. as a result, you have experienced performance anxiety when you go to bed."),
+    ("That’s right.", "and performance anxiety can interfere with performance—in this case, falling asleep quickly. It gets in the way. are you a little more confident after our discussion today, and now that you have seen some progress?"),
+    ("I am encouraged, but I cannot say I am confident yet.", "hopefully, as you see even more progress, you will be able to step back a little more and trust your healthy sleep system to do its job. With more confidence, you will also be better able to take the inevitable occasional sleep setbacks in stride."),
+    ("I think you are right. But I am not there yet.", "one way we can work on this is to look for behaviors that suggest low sleep confidence and do the opposite. for example, do you think a good sleeper would sleep separately from his wife if the two of them actually wanted to sleep in the same bed?"),
+    ("Probably not, but a good sleeper would sleep through his wife’s snoring anyway, and if he woke up because of her snoring, he would be able to get back to sleep quickly anyway.", "you are already sleeping better. do you think this could be a possibility for you?"),
+    ("I’m a little better, but I am not a good sleeper yet.", "good point. Is it possible that one of the things in your way is your anxiety about potential sleep disrupters? how did you use to feel when you noticed your wife snoring beside you?"),
+    ("I was upset. I kept thinking that I was never going to fall asleep that night.", "What would happen if you reminded yourself that sleeping less builds your sleep drive?"),
+    ("I see your point. I guess I am a little worked up over it.", "do you think that being worked up about sleep has a negative impact on your sleep?"),
+    ("for sure. OK, so you want me to move back to my bedroom so that I can act more confident about my sleep?", "do you think you are telling yourself, “my sleep system is too fragile to handle sleeping with my wife”?"),
+    ("Well, not directly, of course, but I guess that this is what I have been telling myself.", "I think you can think of moving back to sleep with your wife as an experiment that will test if your sleep is really that fragile."),
+    ("I can do that.", "good. meanwhile, you should continue to follow the guidelines for setting the stage for good sleep, which we have already discussed. This means that if you are wide awake in bed for any reason, including because she is snoring, you leave the room until you are calm and sleepy."),
+    ("I am nervous about it, but thinking about it as an experiment for just a week helps. She only snores sometimes. It will not be that bad. It would be nice to be in our bed again. I will give it a shot.", "There is something else that you lost because you have had little sleep confidence. you seem to have lost confidence that you can cope with less than ideal sleep, and have therefore stopped doing things you enjoy."),
+    ("my grandkids, right? yes, that bothers me. I just feel so tired, they wear me out. But last week they visited three times, and it was OK. They have a lot of energy— definitely more than I do. But they did not stay long, and I was not watching them. my daughter came too, and it was OK.", "I wonder if you could experiment this week with one visit where you actually do watch them for a short time. are there quiet activities you could get them involved in that would not drain you?"),
+    ("oh, sure. maybe reading them a story or putting a movie on. I could definitely do this. This is my favorite homework so far (smiles).", "glad to hear it.")
 ]
+
 
 
 
