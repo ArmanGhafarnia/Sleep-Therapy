@@ -106,5 +106,5 @@ aspect_results = critic.evaluate_conversation(conversation)
 
 # Print results with colored output
 for aspect, result in aspect_results.items():
-    color = Fore.GREEN if result else Fore.RED
-    print(f"{aspect}:{color} {result}{Style.RESET_ALL}")
+    color = "\033[92m" if result else "\033[91m"  # Green for True, Red for False
+    print(f"{aspect}: {color}{result}\033[0m")

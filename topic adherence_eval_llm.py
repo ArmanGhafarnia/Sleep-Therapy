@@ -1,5 +1,6 @@
 import openai
 import os
+import re
 from typing import List, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -43,7 +44,10 @@ class TopicAdherenceEvaluator:
                 messages=[{"role": "user", "content": prompt}]
             )
             content = response['choices'][0]['message']['content'].strip()
-            scores = [float(line.split(': ')[1]) for line in content.split(', ')]
+
+            # Use regex to safely extract scores
+            scores = re.findall(r"Response \d+: (\d\.\d+|\d)", content)
+            scores = [float(score) for score in scores]
         except Exception as e:
             print(f"Error evaluating batch: {e}")
             scores = [1.0] * len(responses)  # Default to 1 if there's an error for good conversations
@@ -71,7 +75,6 @@ class TopicAdherenceEvaluator:
         topic_adherence_score = sum(adherence_scores) / len(adherence_scores) if adherence_scores else 0
 
         return topic_adherence_score
-
 
 conversation = [
     ("no, but I don’t have any other choice because of her snoring.", "So you would like to sleep together, but you worry that her snoring would wake you up?"),
@@ -101,17 +104,9 @@ conversation = [
 ]
 
 
-
-
-
-
-
-
-
-
 # Initialize the evaluator
 evaluator = TopicAdherenceEvaluator()
 
 # Evaluate the conversation for topic adherence
 score = evaluator.evaluate_conversation(conversation)
-print(f"Topic Adherence Score: {score:.2f}")
+print(f"\033[92mTopic Adherence Score: {score:.2f}\033[0m")

@@ -96,7 +96,27 @@ conversation = [
     ("I'll keep working on it. Thank you for all your support.", "You're very welcome. You're doing a fantastic job, and I'm here to support you every step of the way. Keep up the great work.")
 ]
 
+def print_evaluation_results(evaluation_result):
+    # Define color codes
+    def get_color(status):
+        if status == "Too Short":
+            return "\033[91m"  # Red
+        elif status == "Too Long":
+            return "\033[93m"  # Yellow
+        elif status == "Pass":
+            return "\033[92m"  # Green
+        return "\033[0m"  # Default color
+
+    # Print evaluation results with colors
+    print(f"Total Word Count: {evaluation_result['Total Word Count']}")
+    print(f"Total Character Count: {evaluation_result['Total Character Count']}")
+    word_check_color = get_color(evaluation_result["Word Check"])
+    print(f"Word Check: {word_check_color}{evaluation_result['Word Check']}\033[0m")
+    char_check_color = get_color(evaluation_result["Character Check"])
+    print(f"Character Check: {char_check_color}{evaluation_result['Character Check']}\033[0m")
+
 # Run the length checker
 evaluation_result = length_checker(conversation)
-print(evaluation_result)
+print_evaluation_results(evaluation_result)
+
 

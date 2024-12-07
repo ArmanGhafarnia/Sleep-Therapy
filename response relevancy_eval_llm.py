@@ -79,7 +79,7 @@ class ResponseRelevancyEvaluator:
 
         # Adjust weights to ensure unrelated conversations get lower scores
         if similarity_score >= 0.7 and llm_score >= 0.7:
-            final_score = 0.05 * similarity_score + 0.95 * llm_score
+            final_score = 0.01 * similarity_score + 0.99 * llm_score
         elif similarity_score < 0.4 and llm_score >= 0.7:
             final_score = 0.15 * similarity_score + 0.85 * llm_score
         elif similarity_score >= 0.7 and llm_score < 0.4:
@@ -195,4 +195,4 @@ conversation = [
 
 
 score = evaluator.evaluate_conversation(conversation)
-print(f"Conversation Relevance Score: {score}")
+print(f"\033[92mConversation Relevance Score: {score}\033[0m")
