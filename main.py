@@ -2,9 +2,14 @@ import openai
 import textwrap
 
 # Initialize your API key (replace with your actual API key)
-openai.api_key = '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'
+openai.api_key = 'sk-proj-RNnrhY8CT2tWPIK7R2iTT3BlbkFJFWgbYOz4bFhFUHtPabTy'
 
-def chat_with_gpt(messages, model="gpt-3.5-turbo"):
+# Define color codes
+GREEN = '\033[92m'
+YELLOW = '\033[93m'
+RESET = '\033[0m'
+
+def chat_with_gpt(messages, model="gpt-4o"):
     try:
         # Call OpenAI's API to generate a response
         response = openai.ChatCompletion.create(
@@ -28,18 +33,15 @@ if __name__ == "__main__":
 
     # Initialize conversation history
     messages = [
-        {"role": "system", "content": "You are a therapist for helping patients that have insomnia Answer empathetically and kindly"}
+        {"role": "system", "content": "You are a therapist for helping patients that have insomnia. Answer empathetically and kindly."}
     ]
 
     for i in range(100):
-        user_input = input("You: ")
+        user_input = input(f"{GREEN}You:{RESET} ")
 
         if user_input.lower() == 'quit':
             print("Exiting chatbot.")
             break
-
-        # # Append the generated prompt to the messages
-        # messages.append({"role": "system", "content": ""})
 
         # Add user message to conversation history
         messages.append({"role": "user", "content": user_input})
@@ -51,6 +53,6 @@ if __name__ == "__main__":
         messages.append({"role": "assistant", "content": response})
 
         # Print the response in a more readable format
-        print("Therapist:")
+        print(f"{YELLOW}Therapist:{RESET}")
         for paragraph in response.split('\n'):
             print(textwrap.fill(paragraph, width=70))  # Adjust width as needed
