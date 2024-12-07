@@ -74,13 +74,12 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
         return conditions
 
     formatted_conversation = format_conversation_for_evaluator(conversation_history)
-
+    print(formatted_conversation)
     def evaluate_aspect_critics():
         aspect_critic_evaluator = evaluators["aspect_critics"]
-        print(formatted_conversation)
-        scorex = aspect_critic_evaluator.evaluate_conversation(formatted_conversation)
-        print(scorex)
-        return scorex
+        score_aspect = aspect_critic_evaluator.evaluate_conversation(formatted_conversation)
+        print(f"aspect score : {score_aspect}")
+        return score_aspect
 
     def evaluate_goal_accuracy():
         goal_evaluator = evaluators["goal_accuracy"]
@@ -88,17 +87,25 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
         # Extract only goal names and their True/False status
         simplified_results = {goal: result['Achieved'] for goal, result in goal_results.items()}
         achieved_goals = sum(1 for achieved in simplified_results.values() if achieved)
+        print(f"goal score : {achieved_goals}")
         return (achieved_goals / len(simplified_results)) > 0.85
 
     def evaluate_length():
-        return length_checker(formatted_conversation)
+        length_score = length_checker(formatted_conversation)
+        print(print(f"length score : {length_score}"))
+        return length_score
 
     def evaluate_stay_on_track():
-        return evaluate_conversation_stay_on_track(formatted_conversation)
+        length_checker(formatted_conversation)
+        stay_score = evaluate_conversation_stay_on_track(formatted_conversation)
+        print(f"stay score : {stay_score}")
+        return stay_score
 
     def evaluate_topic_adherence():
         topic_adherence_evaluator = evaluators["topic_adherence"]
-        return topic_adherence_evaluator.evaluate_conversation(formatted_conversation)
+        topic_score = topic_adherence_evaluator.evaluate_conversation(formatted_conversation)
+        print(f"topic score : {topic_score}")
+        return topic_score
 
     # Define evaluators and run them concurrently
     evaluation_functions = {
