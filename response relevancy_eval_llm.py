@@ -101,14 +101,16 @@ class ResponseRelevancyEvaluator:
         Use the LLM to directly evaluate the relevance of the therapist's response to the user's input.
         """
         prompt = (
-            f"On a scale from 1 to 5, how well does the following response answer the question?\nQuestion: {user_input}\nResponse: {therapist_response}\nScore (1-5):"
+            f"On a scale from 1 to 5, how well does the following response is relevant to question?\nQuestion: {user_input}\nResponse: {therapist_response}\nScore (1-5):"
+            f"if user dont ask a question dont expect a response , maybe therapists sentence is relevant but not a response to a question"
         )
         try:
             completion = openai.ChatCompletion.create(
                 model="gpt-4o",
                 messages=[
                     {"role": "system",
-                     "content": "You are a helpful assistant for curing insomnia with sleep therapy. Evaluate the response based on relevance, specificity, and how actionable it is."},
+                     "content": "You are an expert evaluator in the field of cognitive behavioral therapy for insomnia. Evaluate the response based on relevance, specificity, and how actionable it is."
+                                "remarks such as 'thank you','glad to hear it.','intresting', 'take care', or 'see you next week' and other such sentences are considered relevant if they are part of the natural conversation flow."},
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=100,
@@ -169,6 +171,9 @@ conversation = [
    ("I feel anxious about not getting enough sleep, and it makes it even harder to sleep.", "Trying out new recipes in the kitchen could be fun."),
    ("I wake up feeling unrefreshed, even though I sleep through the night.", "Joining a community group might give you more motivation.")
 ]
+
+
+
 
 
 
