@@ -109,4 +109,4 @@ evaluator = TopicAdherenceEvaluator()
 
 # Evaluate the conversation for topic adherence
 score = evaluator.evaluate_conversation(conversation)
-print(f"\033[92mTopic Adherence Score: {score:.2f}\033[0m")
+# print(f"\033[92mTopic Adherence Score: {score:.2f}\033[0m")

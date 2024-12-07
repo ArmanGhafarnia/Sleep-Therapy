@@ -74,8 +74,6 @@ class ResponseRelevancyEvaluator:
         # Direct LLM evaluation to refine the score
         llm_score = self.direct_llm_evaluation(context, user_input, therapist_response)
 
-        print(
-            f"User Input: {user_input}\nTherapist Response: {therapist_response}\nSimilarity Score: {similarity_score}\nLLM Score: {llm_score}\n")
 
         # Adjust weights to ensure unrelated conversations get lower scores
         if similarity_score >= 0.7 and llm_score >= 0.7:
@@ -149,7 +147,6 @@ class ResponseRelevancyEvaluator:
                 try:
                     score = future.result(timeout=20)  # Add a timeout for each future
                     scores.append(score)
-                    print(f"Turn {idx + 1} evaluated successfully with score: {score}")
                 except concurrent.futures.TimeoutError:
                     print(f"Timeout in evaluating turn {idx + 1}")
                 except Exception as e:
@@ -195,4 +192,4 @@ conversation = [
 
 
 score = evaluator.evaluate_conversation(conversation)
-print(f"\033[92mConversation Relevance Score: {score}\033[0m")
+# print(f"\033[92m{score}\033[0m")

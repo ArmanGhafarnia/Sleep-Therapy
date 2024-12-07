@@ -113,7 +113,7 @@ evaluator = ConversationEvaluator(goals, goal_names)
 
 results = evaluator.evaluate_conversation(conversation)
 
-# Print evaluation results
-for goal, result in results.items():
-    achieved_text = "\033[92mTrue\033[0m" if result['Achieved'] else "\033[91mFalse\033[0m"
-    print(f"{goal}: {achieved_text}")
+# # Print evaluation results
+# for goal, result in results.items():
+#     achieved_text = "\033[92mTrue\033[0m" if result['Achieved'] else "\033[91mFalse\033[0m"
+#     print(f"{goal}: {achieved_text}")

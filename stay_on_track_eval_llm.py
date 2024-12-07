@@ -111,6 +111,6 @@ conversation = [
 
 # Evaluate the example conversation
 score, feedback = evaluate_conversation_stay_on_track(conversation)
-print(f"Stay on Track Score: \033[1;92m{score:.2f}\033[0m")
-
-print(f"Feedback: {feedback}")
+# print(f"Stay on Track Score: \033[1;92m{score:.2f}\033[0m")
+#
+# print(f"Feedback: {feedback}")

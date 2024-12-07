@@ -117,6 +117,6 @@ def print_evaluation_results(evaluation_result):
 
 # Run the length checker
 evaluation_result = length_checker(conversation)
-print_evaluation_results(evaluation_result)
+# print_evaluation_results(evaluation_result)
 
 
