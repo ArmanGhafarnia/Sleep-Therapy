@@ -1,6 +1,7 @@
 import openai
 import textwrap
 import concurrent.futures
+import threading
 from typing import List
 from aspect_critic_eval_llm import AspectCritic
 from Goal6_eval_llm import ConversationEvaluator
@@ -27,7 +28,7 @@ class LazyEvaluator:
             self.instance = self.initializer()
         return self.instance
 
-def chat_with_gpt(messages, model="gpt-4o"):
+def chat_with_gpt(messages, model="gpt-4o-mini"):
     try:
         response = openai.ChatCompletion.create(
             model=model,
@@ -74,7 +75,6 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
         return conditions
 
     formatted_conversation = format_conversation_for_evaluator(conversation_history)
-    print(formatted_conversation)
     def evaluate_aspect_critics():
         aspect_critic_evaluator = evaluators["aspect_critics"]
         score_aspect = aspect_critic_evaluator.evaluate_conversation(formatted_conversation)
@@ -92,11 +92,10 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
 
     def evaluate_length():
         length_score = length_checker(formatted_conversation)
-        print(print(f"length score : {length_score}"))
+        print(f"length score : {length_score}")
         return length_score
 
     def evaluate_stay_on_track():
-        length_checker(formatted_conversation)
         stay_score = evaluate_conversation_stay_on_track(formatted_conversation)
         print(f"stay score : {stay_score}")
         return stay_score
@@ -142,9 +141,17 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
     last_evaluated_index = len(conversation_history) - 1
     return results
 
+# Background initialization of evaluators
+def initialize_evaluators_in_background(evaluators):
+    def background_init():
+        for name, evaluator in evaluators.items():
+            evaluator()
+
+    threading.Thread(target=background_init, daemon=True).start()
+
 # Main program loop
 if __name__ == "__main__":
-    print("Chatbot initialized. Type 'quit' to exit.")
+    print("Type 'quit' to exit.")
 
     # Initialize conversation history
     messages = [
@@ -191,6 +198,9 @@ if __name__ == "__main__":
         "topic_adherence": LazyEvaluator(lambda: TopicAdherenceEvaluator())
     }
 
+    # Start evaluator initialization in the background
+    initialize_evaluators_in_background(evaluators)
+
     for i in range(100):
         user_input = input(f"{GREEN}You:{RESET} ")
 
@@ -215,21 +225,21 @@ if __name__ == "__main__":
         # Perform incremental evaluations
         conditions = evaluate_conditions_incrementally(messages, {k: v() for k, v in evaluators.items()}, last_evaluated_index)
 
-        # Display only overall conditions as True or False
+        # Display combined and individual condition statuses
         print("Conditions:")
         for condition, status in conditions.items():
             print(f"{condition}: {'True' if status else 'False'}")
 
-        # Dynamically adjust prompts based on conditions
-        for condition, status in conditions.items():
-            if not status:
-                if condition == "aspect_critics":
-                    messages.append({"role": "system", "content": "Ensure responses align with ethical guidelines and avoid inappropriate suggestions."})
-                elif condition == "goal_accuracy":
-                    messages.append({"role": "system", "content": "Ensure therapy goals are being addressed explicitly."})
-                elif condition == "length_within_range":
-                    messages.append({"role": "system", "content": "Keep responses concise and within acceptable limits."})
-                elif condition == "stayed_on_track":
-                    messages.append({"role": "system", "content": "Redirect off-topic remarks back to sleep therapy."})
-                elif condition == "adhered_to_topic":
-                    messages.append({"role": "system", "content": "Maintain focus on sleep therapy topics."})
+        # Dynamically handle combined conditions
+        if conditions["adhered_to_topic"] and conditions["stayed_on_track"]:
+            messages.append({"role": "system", "content": "Great job staying on topic and ensuring the conversation stays on track. Keep guiding the patient effectively."})
+        elif not conditions["goal_accuracy"] and conditions["length_within_range"]:
+            messages.append({"role": "system", "content": "While the responses are concise, ensure therapy goals are being adequately addressed."})
+        elif not conditions["aspect_critics"] and not conditions["goal_accuracy"]:
+            messages.append({"role": "system", "content": "Make sure to follow ethical guidelines and address therapy goals comprehensively."})
+        elif not conditions["stayed_on_track"]:
+            messages.append({"role": "system", "content": "Redirect the conversation back to sleep therapy and avoid distractions."})
+        elif conditions["goal_accuracy"] and not conditions["adhered_to_topic"]:
+            messages.append({"role": "system", "content": "Ensure the conversation remains relevant to the patient's sleep therapy needs."})
+
+        # Additional logic for complex combinations can be added here as required
