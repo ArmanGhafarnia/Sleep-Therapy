@@ -56,9 +56,17 @@ def format_conversation_for_evaluator(conversation_history):
             formatted_conversation.append((user_sentence, therapist_sentence))
     return formatted_conversation
 
+# Goal progress tracking
+goal_progress = {}
+required_progress = 3  # Define how many successful exchanges are needed to achieve the goal
+
+def initialize_goal_progress(num_goals):
+    global goal_progress
+    goal_progress = {i: 0 for i in range(num_goals)}
+
 def evaluate_conditions_incrementally(conversation_history: List[dict], evaluators: dict, last_index: int, current_goal_index):
     """Run incremental evaluations only on the new parts of the conversation."""
-    global last_evaluated_index
+    global last_evaluated_index, goal_progress, required_progress
     conditions = {
         "aspect_critics": False,
         "goal_accuracy": False,
@@ -75,6 +83,7 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
         return conditions
 
     formatted_conversation = format_conversation_for_evaluator(conversation_history)
+
     def evaluate_aspect_critics():
         aspect_critic_evaluator = evaluators["aspect_critics"]
         score_aspect = aspect_critic_evaluator.evaluate_conversation(formatted_conversation)
@@ -85,9 +94,16 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
         goal_evaluator = evaluators["goal_accuracy"]
         goal_name = goal_evaluator.goal_names[current_goal_index]
         goal_description = goal_evaluator.goals[current_goal_index]
-        goal_achieved = goal_evaluator.check_goal_achieved(goal_description, formatted_conversation)
-        print(f"Goal '{goal_name}' achieved: {goal_achieved}")
-        return goal_achieved
+
+        # Check if the goal is incrementally progressing
+        if goal_evaluator.check_goal_achieved(goal_description, formatted_conversation):
+            goal_progress[current_goal_index] += 1  # Increment progress if the response aligns with the goal
+            print(f"Progress for Goal '{goal_name}': {goal_progress[current_goal_index]}/{required_progress}")
+        else:
+            print(f"No progress for Goal '{goal_name}' in this exchange.")
+
+        # Check if progress meets or exceeds the threshold
+        return goal_progress[current_goal_index] >= required_progress
 
     def evaluate_length():
         length_score = length_checker(formatted_conversation)
@@ -150,7 +166,7 @@ if __name__ == "__main__":
     # Initialize conversation history
     messages = [
         {"role": "system",
-         "content": "You are a therapist for helping patients with insomnia. Provide empathetic and relevant responses. Avoid speak too lot when its unnecessary "}
+         "content": "You are a therapist for helping patients with insomnia. Provide empathetic and relevant responses. Avoid speaking too much when it's unnecessary."}
     ]
 
     # Define goals and goal names
@@ -197,6 +213,7 @@ if __name__ == "__main__":
     initialize_evaluators_in_background(evaluators)
 
     # Initialize goal tracking
+    initialize_goal_progress(len(goals))
     current_goal_index = 0
 
     for i in range(100):
@@ -231,7 +248,8 @@ if __name__ == "__main__":
         # Dynamically handle combined conditions
         if conditions["goal_accuracy"]:
             print(f"{GREEN}Goal '{goal_names[current_goal_index]}' achieved.{RESET}")
-            current_goal_index += 1
+            goal_progress[current_goal_index] = required_progress  # Mark progress as complete
+            current_goal_index += 1  # Move to the next goal
 
             if current_goal_index >= len(goals):
                 print(f"{GREEN}All goals achieved. The session is complete!{RESET}")
@@ -240,7 +258,7 @@ if __name__ == "__main__":
                 print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
                 messages.append({"role": "system", "content": f"Focus on achieving the next goal: {goal_names[current_goal_index]}"})
         else:
-            print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' not yet achieved. Continuing focus on this goal.{RESET}")
+            print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' not yet achieved. Progress: {goal_progress[current_goal_index]}/{required_progress}.{RESET}")
 
         if conditions["adhered_to_topic"] and conditions["stayed_on_track"]:
             messages.append({"role": "system", "content": "Great job staying on topic and ensuring the conversation stays on track. Keep guiding the patient effectively."})
