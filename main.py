@@ -28,7 +28,7 @@ class LazyEvaluator:
             self.instance = self.initializer()
         return self.instance
 
-def chat_with_gpt(messages, model="gpt-4o-mini"):
+def chat_with_gpt(messages, model="gpt-4o"):
     try:
         response = openai.ChatCompletion.create(
             model=model,
@@ -56,7 +56,7 @@ def format_conversation_for_evaluator(conversation_history):
             formatted_conversation.append((user_sentence, therapist_sentence))
     return formatted_conversation
 
-def evaluate_conditions_incrementally(conversation_history: List[dict], evaluators: dict, last_index: int):
+def evaluate_conditions_incrementally(conversation_history: List[dict], evaluators: dict, last_index: int, current_goal_index):
     """Run incremental evaluations only on the new parts of the conversation."""
     global last_evaluated_index
     conditions = {
@@ -83,17 +83,19 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
 
     def evaluate_goal_accuracy():
         goal_evaluator = evaluators["goal_accuracy"]
-        goal_results = goal_evaluator.evaluate_conversation(formatted_conversation)
-        # Extract only goal names and their True/False status
-        simplified_results = {goal: result['Achieved'] for goal, result in goal_results.items()}
-        achieved_goals = sum(1 for achieved in simplified_results.values() if achieved)
-        print(f"goal score : {achieved_goals}")
-        return (achieved_goals / len(simplified_results)) > 0.85
+        goal_name = goal_evaluator.goal_names[current_goal_index]
+        goal_description = goal_evaluator.goals[current_goal_index]
+        goal_achieved = goal_evaluator.check_goal_achieved(goal_description, formatted_conversation)
+        print(f"Goal '{goal_name}' achieved: {goal_achieved}")
+        return goal_achieved
 
     def evaluate_length():
         length_score = length_checker(formatted_conversation)
         print(f"length score : {length_score}")
-        return length_score
+        return (
+            length_score["Word Check"] == "Pass" or
+            length_score["Character Check"] == "Pass"
+        )
 
     def evaluate_stay_on_track():
         stay_score = evaluate_conversation_stay_on_track(formatted_conversation)
@@ -125,15 +127,7 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
             condition = future_to_condition[future]
             try:
                 result = future.result()
-                if condition in ["aspect_critics", "goal_accuracy"]:
-                    results[condition] = all(result.values()) if isinstance(result, dict) else False
-                elif condition == "length_within_range":
-                    results[condition] = result['Word Check'] == "Pass" and result['Character Check'] == "Pass"
-                elif condition == "stayed_on_track":
-                    score, _ = result
-                    results[condition] = score == -1 or score >= 0.85
-                elif condition == "adhered_to_topic":
-                    results[condition] = result >= 0.8
+                results[condition] = result
             except Exception as e:
                 print(f"Error evaluating {condition}: {e}")
 
@@ -155,7 +149,8 @@ if __name__ == "__main__":
 
     # Initialize conversation history
     messages = [
-        {"role": "system", "content": "You are a therapist for helping patients that have insomnia. Answer empathetically and kindly."}
+        {"role": "system",
+         "content": "You are a therapist for helping patients with insomnia. Provide empathetic and relevant responses. Avoid speak too lot when its unnecessary "}
     ]
 
     # Define goals and goal names
@@ -201,6 +196,9 @@ if __name__ == "__main__":
     # Start evaluator initialization in the background
     initialize_evaluators_in_background(evaluators)
 
+    # Initialize goal tracking
+    current_goal_index = 0
+
     for i in range(100):
         user_input = input(f"{GREEN}You:{RESET} ")
 
@@ -222,8 +220,8 @@ if __name__ == "__main__":
         for paragraph in response.split('\n'):
             print(textwrap.fill(paragraph, width=70))
 
-        # Perform incremental evaluations
-        conditions = evaluate_conditions_incrementally(messages, {k: v() for k, v in evaluators.items()}, last_evaluated_index)
+        # Perform incremental evaluations, including the current goal
+        conditions = evaluate_conditions_incrementally(messages, {k: v() for k, v in evaluators.items()}, last_evaluated_index, current_goal_index)
 
         # Display combined and individual condition statuses
         print("Conditions:")
@@ -231,6 +229,19 @@ if __name__ == "__main__":
             print(f"{condition}: {'True' if status else 'False'}")
 
         # Dynamically handle combined conditions
+        if conditions["goal_accuracy"]:
+            print(f"{GREEN}Goal '{goal_names[current_goal_index]}' achieved.{RESET}")
+            current_goal_index += 1
+
+            if current_goal_index >= len(goals):
+                print(f"{GREEN}All goals achieved. The session is complete!{RESET}")
+                break
+            else:
+                print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
+                messages.append({"role": "system", "content": f"Focus on achieving the next goal: {goal_names[current_goal_index]}"})
+        else:
+            print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' not yet achieved. Continuing focus on this goal.{RESET}")
+
         if conditions["adhered_to_topic"] and conditions["stayed_on_track"]:
             messages.append({"role": "system", "content": "Great job staying on topic and ensuring the conversation stays on track. Keep guiding the patient effectively."})
         elif not conditions["goal_accuracy"] and conditions["length_within_range"]:
@@ -241,5 +252,3 @@ if __name__ == "__main__":
             messages.append({"role": "system", "content": "Redirect the conversation back to sleep therapy and avoid distractions."})
         elif conditions["goal_accuracy"] and not conditions["adhered_to_topic"]:
             messages.append({"role": "system", "content": "Ensure the conversation remains relevant to the patient's sleep therapy needs."})
-
-        # Additional logic for complex combinations can be added here as required
