@@ -34,7 +34,6 @@ def chat_with_gpt(messages, model="gpt-4o"):
         response = openai.ChatCompletion.create(
             model=model,
             messages=messages,
-            max_tokens=100,
             n=1,
             stop=None,
             temperature=0.9
