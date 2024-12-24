@@ -29,7 +29,6 @@ class LazyEvaluator:
             self.instance = self.initializer()
         return self.instance
 
-
 def chat_with_gpt(messages, model="gpt-4o"):
     try:
         response = openai.ChatCompletion.create(
@@ -60,16 +59,24 @@ def format_conversation_for_evaluator(conversation_history):
             formatted_conversation.append((user_sentence, therapist_sentence))
     return formatted_conversation
 
+# Modify this function to include only the last conversation tuple
+def format_last_conversation_tuple(conversation_history):
+    """Extract the last user-therapist tuple for evaluation."""
+    if len(conversation_history) < 2:
+        return []
+    last_user = conversation_history[-2]
+    last_therapist = conversation_history[-1]
+    if last_user['role'] == 'user' and last_therapist['role'] == 'assistant':
+        return [(last_user['content'], last_therapist['content'])]
+    return []
 
 # Goal progress tracking
 goal_progress = {}
 required_progress = 3  # Define how many successful exchanges are needed to achieve the goal
 
-
 def initialize_goal_progress(num_goals):
     global goal_progress
     goal_progress = {i: 0 for i in range(num_goals)}
-
 
 def evaluate_conditions_incrementally(conversation_history: List[dict], evaluators: dict, last_index: int,
                                       current_goal_index):
@@ -89,12 +96,12 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
     if not new_history:
         # If no new messages, return previously cached conditions
         return conditions
-
     formatted_conversation = format_conversation_for_evaluator(conversation_history)
+    formatted_conversation_last = format_last_conversation_tuple(conversation_history)
 
     def evaluate_aspect_critics():
         aspect_critic_evaluator = evaluators["aspect_critics"]
-        aspect_results = aspect_critic_evaluator.evaluate_conversation(formatted_conversation)
+        aspect_results = aspect_critic_evaluator.evaluate_conversation(formatted_conversation_last)
         print(f"aspect results: {aspect_results}")
         return all(aspect_results.values())
 
@@ -128,7 +135,7 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
 
     def evaluate_topic_adherence():
         topic_adherence_evaluator = evaluators["topic_adherence"]
-        topic_score = topic_adherence_evaluator.evaluate_conversation(formatted_conversation)
+        topic_score = topic_adherence_evaluator.evaluate_conversation(formatted_conversation_last)
         print(f"topic score : {topic_score}")
         return topic_score >= 0.85
 
@@ -159,7 +166,6 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
     last_evaluated_index = len(conversation_history) - 1
     return results
 
-
 # Background initialization of evaluators
 def initialize_evaluators_in_background(evaluators):
     def background_init():
@@ -167,7 +173,6 @@ def initialize_evaluators_in_background(evaluators):
             evaluator()
 
     threading.Thread(target=background_init, daemon=True).start()
-
 
 # Main program loop
 if __name__ == "__main__":
@@ -180,7 +185,7 @@ if __name__ == "__main__":
                     " Today, your focus is on conducting an initial assessment using the Insomnia Intake Interview"
                     " to gather detailed information about the patient's sleep patterns and issues."
                     " Encourage the patient to maintain a Sleep Diary, and utilize the Insomnia Severity Index to"
-                    " quantify the severity of their symptoms. answer empathetic and precise just when its needed not always,"
+                    " quantify the severity of their symptoms."
                     " ensuring you gather all necessary details without overwhelming the patient."
                     "Avoid speaking too much when it's unnecessary."}
     ]
