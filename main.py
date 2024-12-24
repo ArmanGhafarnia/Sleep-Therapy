@@ -133,7 +133,7 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
         )
 
     def evaluate_stay_on_track():
-        stay_score, feedback = evaluate_conversation_stay_on_track(formatted_conversation)
+        stay_score, feedback = evaluate_conversation_stay_on_track(formatted_conversation_last)
         print(f"stay score : {stay_score}")
         return stay_score == -1 or stay_score >= 0.85
 
