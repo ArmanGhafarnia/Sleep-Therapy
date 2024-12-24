@@ -84,7 +84,8 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
     global last_evaluated_index, goal_progress, required_progress
     conditions = {
         "aspect_critics": False,
-        "goal_accuracy": False,
+        "current_goal_achieved": False,
+        "all_goals_achieved": False,
         "length_within_range": False,
         "stayed_on_track": False,
         "adhered_to_topic": False
@@ -105,7 +106,7 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
         print(f"aspect results: {aspect_results}")
         return all(aspect_results.values())
 
-    def evaluate_goal_accuracy():
+    def evaluate_current_goal():
         goal_evaluator = evaluators["goal_accuracy"]
         goal_name = goal_evaluator.goal_names[current_goal_index]
         goal_description = goal_evaluator.goals[current_goal_index]
@@ -119,6 +120,9 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
 
         # Check if progress meets or exceeds the threshold
         return goal_progress[current_goal_index] >= required_progress
+
+    def evaluate_all_goals():
+        return all(progress >= required_progress for progress in goal_progress.values())
 
     def evaluate_length():
         length_score = length_checker(formatted_conversation)
@@ -142,7 +146,8 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
     # Define evaluators and run them concurrently
     evaluation_functions = {
         "aspect_critics": evaluate_aspect_critics,
-        "goal_accuracy": evaluate_goal_accuracy,
+        "current_goal_achieved": evaluate_current_goal,
+        "all_goals_achieved": evaluate_all_goals,
         "length_within_range": evaluate_length,
         "stayed_on_track": evaluate_stay_on_track,
         "adhered_to_topic": evaluate_topic_adherence
@@ -273,7 +278,7 @@ if __name__ == "__main__":
             print(f"{condition}: {'True' if status else 'False'}")
 
         # Dynamically handle combined conditions
-        if conditions["goal_accuracy"]:
+        if conditions["current_goal_achieved"]:
             print(f"{GREEN}Goal '{goal_names[current_goal_index]}' achieved.{RESET}")
             goal_progress[current_goal_index] = required_progress  # Mark progress as complete
             current_goal_index += 1  # Move to the next goal
@@ -297,11 +302,11 @@ if __name__ == "__main__":
             messages.append({"role": "system",
                              "content": "We seem to be drifting from the main topics. Please redirect your focus back to the primary issues concerning sleep therapy and avoid distractions."})
 
-        if not conditions["goal_accuracy"] and conditions["length_within_range"]:
+        if not conditions["all_goals_achieved"] and conditions["length_within_range"]:
             messages.append({"role": "system",
                              "content": "As we are nearing the end of our session time, it's crucial to concentrate our efforts on the key therapy goals. Please prioritize the most critical aspects of the treatment plan, addressing the patient’s primary concerns quickly and efficiently. Ensure your responses are direct and focused, helping us to maximize the remaining time effectively."})
 
-        if conditions["goal_accuracy"] and conditions["length_within_range"]:
+        if conditions["all_goals_achieved"] and conditions["length_within_range"]:
             messages.append({"role": "system",
                              "content": "Excellent work! All goals have been achieved and our discussion has been efficiently conducted within the ideal length. Let's conclude this session on a positive note. Thank you for your contributions today; you’ve made significant progress. Please prepare any final thoughts or recommendations for the patient."})
 
