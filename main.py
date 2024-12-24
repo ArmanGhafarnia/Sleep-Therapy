@@ -71,7 +71,7 @@ def format_last_conversation_tuple(conversation_history):
 
 # Goal progress tracking
 goal_progress = {}
-required_progress = 3  # Define how many successful exchanges are needed to achieve the goal
+required_progress = 4  # Define how many successful exchanges are needed to achieve the goal
 
 def initialize_goal_progress(num_goals):
     global goal_progress
