@@ -217,6 +217,22 @@ if __name__ == "__main__":
         "The model should ask open-ended questions that encourage the patient to describe their sleep problems in detail."
     ]
 
+    goal_specific_prompts = {
+        "Gather Information": "Focus on gathering comprehensive information about the patient's sleep issues, including difficulty falling or staying asleep, the frequency of sleep disruptions, and their impact on daily life. Use open-ended questions to encourage detailed responses.",
+        "Identifies Unhealthy Sleep Practices": "Discuss unhealthy sleep practices with the patient. Identify behaviors like poor sleep hygiene, caffeine or alcohol use near bedtime, excessive worry at night, or prolonged screen time before sleep.",
+        "Assessing Circadian Tendencies and Factors": "Evaluate the patient's circadian rhythm tendencies, such as whether they are a 'night owl' or 'morning person.' Discuss how these tendencies impact their sleep quality and timing.",
+        "Evaluating Comorbidities": "Explore and identify any psychiatric, medical, or other sleep disorders that may coexist with the insomnia. Gather details to assess these comorbidities thoroughly.",
+        "Treatment Goals Establishment": "Help the patient set realistic and achievable sleep improvement goals based on the findings from the assessment. Ensure these goals are practical and tailored to the patient's needs.",
+        "Utilization of the Sleep Diary": "Encourage the patient to maintain a sleep diary to collect accurate data about their sleep patterns. Explain how the diary will be used to inform treatment strategies.",
+        "Assess intake interview": "Conduct a thorough intake interview covering key areas necessary for understanding and treating insomnia. Gather detailed information on the patient's sleep patterns, lifestyle, environmental influences, and medical history.",
+        "Open-Ended Questions": "Use open-ended questions to encourage the patient to describe their sleep problems in detail. Avoid leading questions and provide space for the patient to elaborate."
+    }
+
+
+    # Update lines 290 and 291 to use the goal-specific prompts
+    def get_prompt_for_goal(goal_name):
+        return goal_specific_prompts.get(goal_name, "Focus on achieving the next goal.")
+
     # Initialize evaluators lazily
     evaluators = {
         "aspect_critics": LazyEvaluator(lambda: AspectCritic(aspects=[
@@ -287,12 +303,16 @@ if __name__ == "__main__":
                 break
             else:
                 print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
-                messages.append({"role": "system",
-                                 "content": f"Focus on achieving the next goal: {goal_names[current_goal_index]}"})
+                current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
+                print(f"prompt : {current_goal_prompt}")
+                messages.append({"role": "system", "content": current_goal_prompt})
         else:
             print(
                 f"{YELLOW}Goal '{goal_names[current_goal_index]}' not yet achieved. Progress: {goal_progress[current_goal_index]}/{required_progress}.{RESET}")
 
+            current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
+            print(f"prompt : {current_goal_prompt}")
+            messages.append({"role": "system", "content": current_goal_prompt})
         if not conditions["adhered_to_topic"]:
             messages.append({"role": "system",
                              "content": "Please refocus on the central topic of sleep therapy. Discuss specific sleep issues,and directly address any concerns raised by the patient. Ensure your responses contribute directly to understanding or resolving the patient’s insomnia-related challenges."})
