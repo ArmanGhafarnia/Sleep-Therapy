@@ -60,22 +60,23 @@ class ConversationEvaluator:
 goal_names = [
     "Managing High Arousal States",
     "Sleep Hygiene Education",
+    "Providing Rationale for Interventions",
     "Behavioral Strategies Adherence",
-    "Personalized Sleep Strategies",
-    "Assessing Strategy Effectiveness",
     "Sleep Mechanisms Education",
-    "Providing Rationale for Interventions"
+    "Assessing Strategy Effectiveness",
+    "Personalized Sleep Strategies"
 ]
 
 goals = [
     "The model should effectively discuss techniques to manage high arousal states that are disruptive to sleep. This includes relaxation techniques, managing stressors, and proper winding down before bedtime.",
     "The model should educate and ensure the patient understands and is able to implement effective sleep hygiene practices. This includes maintaining a consistent sleep schedule, optimizing the sleep environment (e.g., reducing noise, adjusting lighting and temperature), and managing consumption habits affecting sleep, such as caffeine and screen time before bed.",
+    "Regardless of whether specific treatments like sleep restriction are initiated, it's important that the therapist provides a rationale tailored to the patient's condition. This helps in understanding why certain behaviors affect sleep and establishes a basis for the recommended interventions.",
     "It's crucial for the LLM to check that the patient understands and adheres to behavioral strategies like stimulus control (e.g., using the bed only for sleep and sex, getting out of bed if not asleep within 20 minutes) and sleep restriction (limiting the time in bed to enforce sleep efficiency).",
-    "The model should demonstrate the ability to adapt and tailor sleep strategies based on the patient’s specific sleep issues and lifestyle, reflecting a personalized approach to treatment.",
-    "Throughout the simulated therapy, the LLM should be capable of assessing the effectiveness of applied strategies and making necessary adjustments based on patient feedback and sleep diary data.",
     "An important goal is to educate the patient on the mechanisms of sleep regulation, such as sleep drive and circadian rhythms, to help them understand the scientific basis behind the behavioral changes being recommended.",
-    "Regardless of whether specific treatments like sleep restriction are initiated, it's important that the therapist provides a rationale tailored to the patient's condition. This helps in understanding why certain behaviors affect sleep and establishes a basis for the recommended interventions"
+    "Throughout the simulated therapy, the LLM should be capable of assessing the effectiveness of applied strategies and making necessary adjustments based on patient feedback and sleep diary data.",
+    "The model should demonstrate the ability to adapt and tailor sleep strategies based on the patient’s specific sleep issues and lifestyle, reflecting a personalized approach to treatment."
 ]
+
 
 conversation = [
     ("no, but I don’t have any other choice because of her snoring.", "So you would like to sleep together, but you worry that her snoring would wake you up?"),
