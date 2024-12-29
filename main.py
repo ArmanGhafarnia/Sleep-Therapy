@@ -29,6 +29,7 @@ class LazyEvaluator:
             self.instance = self.initializer()
         return self.instance
 
+
 def chat_with_gpt(messages, model="gpt-4o"):
     try:
         response = openai.ChatCompletion.create(
@@ -58,6 +59,7 @@ def format_conversation_for_evaluator(conversation_history):
             formatted_conversation.append((user_sentence, therapist_sentence))
     return formatted_conversation
 
+
 # Modify this function to include only the last conversation tuple
 def format_last_conversation_tuple(conversation_history):
     """Extract the last user-therapist tuple for evaluation."""
@@ -69,13 +71,16 @@ def format_last_conversation_tuple(conversation_history):
         return [(last_user['content'], last_therapist['content'])]
     return []
 
+
 # Goal progress tracking
 goal_progress = {}
 required_progress = 4  # Define how many successful exchanges are needed to achieve the goal
 
+
 def initialize_goal_progress(num_goals):
     global goal_progress
     goal_progress = {i: 0 for i in range(num_goals)}
+
 
 def evaluate_conditions_incrementally(conversation_history: List[dict], evaluators: dict, last_index: int,
                                       current_goal_index):
@@ -170,6 +175,7 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
     last_evaluated_index = len(conversation_history) - 1
     return results
 
+
 # Background initialization of evaluators
 def initialize_evaluators_in_background(evaluators):
     def background_init():
@@ -177,6 +183,7 @@ def initialize_evaluators_in_background(evaluators):
             evaluator()
 
     threading.Thread(target=background_init, daemon=True).start()
+
 
 # Main program loop
 if __name__ == "__main__":
@@ -197,41 +204,44 @@ if __name__ == "__main__":
     # Define goals and goal names
     goal_names = [
         "Gather Information",
+        "Utilization of the Sleep Diary",
+        "Open-Ended Questions"
+        "Assess intake interview",
         "Identifies Unhealthy Sleep Practices",
         "Assessing Circadian Tendencies and Factors",
         "Evaluating Comorbidities",
         "Treatment Goals Establishment",
-        "Utilization of the Sleep Diary",
-        "Assess intake interview",
-        "Open-Ended Questions"
+
     ]
 
     goals = [
         "The model should effectively gather comprehensive information about the patient's current sleep issues, including difficulty falling or staying asleep, the frequency of sleep disruptions, and their impact on daily life.",
+        "The model should encourage the patient to maintain a sleep diary as a critical tool for collecting accurate data about their sleep patterns.",
+        "The model should ask open-ended questions that encourage the patient to describe their sleep problems in detail."
+        "Assess the model's proficiency in conducting a thorough intake interview that covers key areas necessary for an accurate understanding and subsequent treatment of insomnia. This includes gathering detailed information on the patient's sleep patterns, lifestyle and environmental influences, psychological and emotional factors, medical history.",
         "The model identifies and discusses unhealthy sleep practices, such as poor sleep hygiene, the use of substances that disrupt sleep (like caffeine or alcohol close to bedtime), and other behaviors detrimental to sleep like excessive bedtime worry or screen time before sleep.",
         "The model needs to accurately assess the patient's circadian rhythm influences on sleep problems, such as being a \"night owl\" or \"morning person\" and how these tendencies affect their sleep quality and timing.",
         "It is crucial that the model explores and identifies any psychiatric, medical, or other sleep disorders that coexist with the insomnia.",
         "The model should be able to help the patient set realistic and achievable sleep improvement goals based on the assessment findings.",
-        "The model should encourage the patient to maintain a sleep diary as a critical tool for collecting accurate data about their sleep patterns.",
-        "Assess the model's proficiency in conducting a thorough intake interview that covers key areas necessary for an accurate understanding and subsequent treatment of insomnia. This includes gathering detailed information on the patient's sleep patterns, lifestyle and environmental influences, psychological and emotional factors, medical history.",
-        "The model should ask open-ended questions that encourage the patient to describe their sleep problems in detail."
     ]
 
     goal_specific_prompts = {
         "Gather Information": "Focus on gathering comprehensive information about the patient's sleep issues, including difficulty falling or staying asleep, the frequency of sleep disruptions, and their impact on daily life. Use open-ended questions to encourage detailed responses.",
+        "Utilization of the Sleep Diary": "Encourage the patient to maintain a sleep diary to collect accurate data about their sleep patterns. Explain how the diary will be used to inform treatment strategies.",
+        "Open-Ended Questions": "Use open-ended questions to encourage the patient to describe their sleep problems in detail. Avoid leading questions and provide space for the patient to elaborate.",
+        "Assess intake interview": "Conduct a thorough intake interview covering key areas necessary for understanding and treating insomnia. Gather detailed information on the patient's sleep patterns, lifestyle, environmental influences, and medical history.",
         "Identifies Unhealthy Sleep Practices": "Discuss unhealthy sleep practices with the patient. Identify behaviors like poor sleep hygiene, caffeine or alcohol use near bedtime, excessive worry at night, or prolonged screen time before sleep.",
         "Assessing Circadian Tendencies and Factors": "Evaluate the patient's circadian rhythm tendencies, such as whether they are a 'night owl' or 'morning person.' Discuss how these tendencies impact their sleep quality and timing.",
         "Evaluating Comorbidities": "Explore and identify any psychiatric, medical, or other sleep disorders that may coexist with the insomnia. Gather details to assess these comorbidities thoroughly.",
-        "Treatment Goals Establishment": "Help the patient set realistic and achievable sleep improvement goals based on the findings from the assessment. Ensure these goals are practical and tailored to the patient's needs.",
-        "Utilization of the Sleep Diary": "Encourage the patient to maintain a sleep diary to collect accurate data about their sleep patterns. Explain how the diary will be used to inform treatment strategies.",
-        "Assess intake interview": "Conduct a thorough intake interview covering key areas necessary for understanding and treating insomnia. Gather detailed information on the patient's sleep patterns, lifestyle, environmental influences, and medical history.",
-        "Open-Ended Questions": "Use open-ended questions to encourage the patient to describe their sleep problems in detail. Avoid leading questions and provide space for the patient to elaborate."
+        "Treatment Goals Establishment": "Help the patient set realistic and achievable sleep improvement goals based on the findings from the assessment. Ensure these goals are practical and tailored to the patient's needs."
+
     }
 
 
     # Update lines 290 and 291 to use the goal-specific prompts
     def get_prompt_for_goal(goal_name):
         return goal_specific_prompts.get(goal_name, "Focus on achieving the next goal.")
+
 
     # Initialize evaluators lazily
     evaluators = {
