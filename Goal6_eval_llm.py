@@ -59,26 +59,27 @@ class ConversationEvaluator:
 
 goal_names = [
     "Gather Information",
-    "Utilization of the Sleep Diary",
-    "Open-Ended Questions"
-    "Assess intake interview",
-    "Identifies Unhealthy Sleep Practices",
     "Assessing Circadian Tendencies and Factors",
     "Evaluating Comorbidities",
+    "Utilization of the Sleep Diary",
+    "Open-Ended Questions",
+    "Assess Intake Interview",
+    "Identifies Unhealthy Sleep Practices",
     "Treatment Goals Establishment",
-
 ]
+
 
 goals = [
-    "The model should effectively gather comprehensive information about the patient's current sleep issues, including difficulty falling or staying asleep, the frequency of sleep disruptions, and their impact on daily life and information about any past treatments and interventions the patient has tried,and their outcomes.",
-    "The model should encourage the patient to maintain a sleep diary as a critical tool for collecting accurate data about their sleep patterns.",
-    "The model should ask open-ended questions that encourage the patient to describe their sleep problems in detail."
-    "Assess the model's proficiency in conducting a thorough intake interview that covers key areas necessary for an accurate understanding and subsequent treatment of insomnia. This includes gathering detailed information on the patient's sleep patterns, lifestyle and environmental influences, psychological and emotional factors, medical history.",
-    "The model identifies and discusses unhealthy sleep practices, such as poor sleep hygiene, the use of substances that disrupt sleep (like caffeine or alcohol close to bedtime), and other behaviors detrimental to sleep like excessive bedtime worry or screen time before sleep.",
-    "The model needs to accurately assess the patient's circadian rhythm influences on sleep problems, such as being a \"night owl\" or \"morning person\" and how these tendencies affect their sleep quality and timing.",
+    "The model should effectively gather comprehensive information about the patient's current sleep issues, including difficulty falling or staying asleep, the frequency of sleep disruptions, and their impact on daily life and information about any past treatments and interventions the patient has tried, and their outcomes.",
+    "The model needs to accurately assess the patient's circadian rhythm influences on sleep problems, such as being a 'night owl' or 'morning person' and how these tendencies affect their sleep quality and timing.",
     "It is crucial that the model explores and identifies any psychiatric, medical, or other sleep disorders that coexist with the insomnia.",
+    "The model should encourage the patient to maintain a sleep diary as a critical tool for collecting accurate data about their sleep patterns.",
+    "The model should ask open-ended questions that encourage the patient to describe their sleep problems in detail.",
+    "Assess the model's proficiency in conducting a thorough intake interview that covers key areas necessary for an accurate understanding and subsequent treatment of insomnia. This includes gathering detailed information on the patient's sleep patterns, lifestyle and environmental influences, psychological and emotional factors, and medical history.",
+    "The model identifies and discusses unhealthy sleep practices, such as poor sleep hygiene, the use of substances that disrupt sleep (like caffeine or alcohol close to bedtime), and other behaviors detrimental to sleep like excessive bedtime worry or screen time before sleep.",
     "The model should be able to help the patient set realistic and achievable sleep improvement goals based on the assessment findings.",
 ]
+
 
 
 conversation = [
