@@ -58,20 +58,21 @@ class ConversationEvaluator:
 goal_names = [
     "Identifying Maladaptive Cognitions",
     "Challenging and Modifying Cognitions",
-    "Promoting Adherence to Behavioral Changes",
     "Reducing Psychological Arousal",
-    "Develop Coping and Problem-Solving Skills for Sleep",
-    "Incorporate Behavioral Experiments to Test Beliefs and Behaviors"
+    "Promoting Adherence to Behavioral Changes",
+    "Incorporate Behavioral Experiments to Test Beliefs and Behaviors",
+    "Develop Coping and Problem-Solving Skills for Sleep"
 ]
 
 goals = [
     "The model should help patients identify thoughts and beliefs about sleep that are unhelpful or detrimental. This includes recognizing worries about sleep, like predicting sleep difficulty or fearing the consequences of poor sleep, which heighten psychological arousal and disrupt sleep.",
     "The model should assist in evaluating and responding to these maladaptive cognitions constructively. Techniques like Socratic questioning, thought records, and cognitive restructuring are used to challenge the validity and utility of these beliefs.",
-    "Cognitive therapy should work in tandem with behavioral interventions in CBT-I (Cognitive Behavioral Therapy for Insomnia) to promote better adherence. For instance, addressing thoughts that hinder compliance with strategies like stimulus control (getting out of bed when not sleeping) and sleep restriction.",
     "The model should aid in reducing psychological arousal that occurs at bedtime or during awakenings at night, which is often linked to sleep-related cognitions. Strategies include cognitive restructuring and calming techniques.",
-    "The model should guide patients in developing skills to cope with and solve sleep-related problems independently, enhancing their resilience and ability to manage insomnia without therapist intervention.",
-    "Behavioral experiments are a key component of cognitive therapy for insomnia, where patients test the validity of their beliefs or the utility of different behaviors in a controlled, experimental manner. This can involve, for example, deliberately altering sleep patterns to observe effects contrary to their dysfunctional beliefs."
+    "Cognitive therapy should work in tandem with behavioral interventions in CBT-I (Cognitive Behavioral Therapy for Insomnia) to promote better adherence. For instance, addressing thoughts that hinder compliance with strategies like stimulus control (getting out of bed when not sleeping) and sleep restriction.",
+    "Behavioral experiments are a key component of cognitive therapy for insomnia, where patients test the validity of their beliefs or the utility of different behaviors in a controlled, experimental manner. This can involve, for example, deliberately altering sleep patterns to observe effects contrary to their dysfunctional beliefs.",
+    "The model should guide patients in developing skills to cope with and solve sleep-related problems independently, enhancing their resilience and ability to manage insomnia without therapist intervention."
 ]
+
 
 conversation = [
    ("Hi, I’ve been trying to follow the sleep schedule you suggested, but I still get really anxious before bedtime. I keep worrying about not getting enough sleep and how tired I’ll be the next day.",
