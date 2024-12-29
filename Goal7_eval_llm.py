@@ -58,30 +58,31 @@ class ConversationEvaluator:
 # Example usage
 
 goal_names = [
+    "Addressing Common Sleep Misconceptions",
+    "Determining Initial Sleep Window",
     "Stimulus Control Explanation",
+    "Rules of Stimulus Control",
     "Sleep Restriction Therapy Description",
     "Combining Stimulus Control and Sleep Restriction",
     "Assess Patient Understanding and Commitment",
     "Dealing with Common Obstacles",
-    "Rules of Stimulus Control",
-    "Determining Initial Sleep Window",
     "Adjusting Recommendations Based on Feedback",
-    "Addressing Common Sleep Misconceptions",
     "Monitoring Progress and Modifying Techniques"
 ]
 
 goals = [
+    "The model should proactively address common misconceptions about sleep and sleep needs, such as the myth that everyone needs 8 hours of sleep, to set realistic expectations for therapy.",
+    "The model must instruct the patient on how to determine their initial sleep window for sleep restriction based on a sleep diary, explaining how to calculate sleep efficiency and adjust the sleep window accordingly.",
     "The Model should articulate what stimulus control is and why it's used in treating insomnia. It must explain that this approach helps patients associate the bed and bedroom with sleep and not with wakefulness or other activities.",
+    "The Model should explain the rules of stimulus control, such as only going to bed when sleepy, not using the bed for activities other than sleep and sex, getting out of bed if unable to sleep within about 20 minutes, and maintaining a regular morning wake-up time regardless of sleep duration the previous night.",
     "The Model must clearly describe how to implement sleep restriction therapy. It should guide the patient to limit their time in bed to closely match the total amount of time they usually sleep, to increase the pressure to sleep and enhance sleep efficiency.",
     "The Model should illustrate how to effectively combine stimulus control and sleep restriction. This includes practical guidance on adjusting bedtime and wake-up time based on a sleep diary and responding to difficulties the patient might encounter.",
     "Throughout the conversation, the Model must assess whether the patient understands the techniques and is committed to applying them. It should answer any questions and address concerns to ensure patient compliance and optimize therapy outcomes.",
     "The Model should offer examples and practical tips for dealing with common obstacles in implementing these therapies, such as what to do when one cannot fall asleep or how to manage the urge to stay in bed longer.",
-    "The Model should explain the rules of stimulus control, such as only going to bed when sleepy, not using the bed for activities other than sleep and sex, getting out of bed if unable to sleep within about 20 minutes, and maintaining a regular morning wake-up time regardless of sleep duration the previous night.",
-    "The model must instruct the patient on how to determine their initial sleep window for sleep restriction based on a sleep diary, explaining how to calculate sleep efficiency and adjust the sleep window accordingly.",
     "The model should demonstrate the ability to adjust recommendations based on the patient’s feedback, such as difficulties in implementing strategies, unexpected wakefulness, or variations in sleep patterns observed in the sleep diary.",
-    "The model should proactively address common misconceptions about sleep and sleep needs, such as the myth that everyone needs 8 hours of sleep, to set realistic expectations for therapy.",
     "An essential goal for the model is to guide the patient in monitoring their progress through a sleep diary and modifying sleep restrictions or stimulus control techniques based on this ongoing assessment."
 ]
+
 
 
 
