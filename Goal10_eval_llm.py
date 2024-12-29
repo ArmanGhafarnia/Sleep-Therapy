@@ -58,31 +58,31 @@ class ConversationEvaluator:
 # Example usage
 
 goal_names = [
-   "Individual Tailoring",
-   "Understanding Comorbidities",
-   "Therapeutic Component Selection",
-   "Anticipation of Adherence Challenges",
-   "Case Conceptualization Form Simulation",
    "Assessment of Treatment Readiness",
    "Detailed Case Conceptualization",
+   "Case Conceptualization Form Simulation",
+   "Understanding Comorbidities",
+   "Therapeutic Component Selection",
    "Flexibility in Treatment Application",
+   "Individual Tailoring",
+   "Anticipation of Adherence Challenges",
    "Sequential Treatment Implementation",
    "Evaluation of Treatment Effectiveness"
 ]
 
-
 goals = [
-   "The therapy session should demonstrate the language model's ability to tailor the treatment to the individual patient’s symptoms and history as discussed throughout the book. The model should use patient-specific information to guide the conversation in a way that aligns with the best practices for cognitive-behavioral therapy for insomnia (CBT-I).",
-   "The model should show an understanding of various comorbidities’ impacts on insomnia. This means the model should intelligently discuss how other health issues might affect sleep and incorporate this understanding into the therapy suggestions.",
-   "The session should reflect thoughtful selection of CBT-I components that are most appropriate to the patient’s case, taking into account their readiness for change, potential obstacles, and the patient’s sleep behavior and environment.",
-   "The model should anticipate and address potential adherence challenges. This includes discussing strategies to overcome these barriers, providing motivation, and setting realistic expectations for the patient.",
-   "The model should simulate the use of a case conceptualization form to systematically organize and guide the treatment process. This involves the model structuring its conversation to mimic the gathering and analysis of patient-specific information about sleep habits, comorbidities, and behavioral factors, and using this structured approach to tailor and plan the treatment. The simulation ensures that each therapeutic suggestion is informed by a comprehensive understanding of the individual's unique sleep-related issues, enhancing the personalization and effectiveness of the therapy.",
-   "The model should assess the patient’s readiness for change and willingness to adopt new sleep behaviors, as determining treatment readiness is crucial for effectively timing and implementing interventions.",
-   "Beyond the use of a form, the model should also integrate detailed case conceptualization, considering the interplay of various contributing factors like life stressors, environmental influences, and personal habits that affect sleep.",
-   "The model should demonstrate flexibility in applying CBT-I, adjusting the standard protocol to better fit the patient’s specific situation, such as modifying sleep restriction therapy for patients with comorbid conditions like depression or anxiety.",
-   "It should effectively sequence treatment interventions, ensuring that each component introduced builds on the previous one and corresponds to the patient’s evolving therapeutic needs.",
-   "The model should evaluate the effectiveness of implemented treatments within the session, checking for patient feedback and signs of improvement or difficulties, and adjusting the plan accordingly."
+   "The therapy session should assess the patient’s readiness for change, determining their willingness to adopt new sleep behaviors. This is critical for effectively timing and implementing interventions.",
+   "Beyond the use of a form, the therapy should involve a detailed conceptualization that considers factors like life stressors, environmental influences, and personal habits that affect sleep.",
+   "The session should simulate the use of a case conceptualization form to systematically organize and guide the treatment process, considering sleep habits, comorbidities, and behavioral factors.",
+   "The model should demonstrate understanding of the impact of various comorbidities on insomnia and incorporate this knowledge into therapy suggestions.",
+   "The session should reflect thoughtful selection of CBT-I components that are most appropriate to the patient’s case, considering readiness for change, obstacles, and the patient’s sleep environment.",
+   "The therapy should adjust the standard CBT-I protocol to fit the patient’s specific situation, such as modifying techniques for comorbid conditions like anxiety or depression.",
+   "The treatment should be tailored to the individual patient’s symptoms and history, using patient-specific information to guide the conversation and interventions.",
+   "The model should anticipate potential adherence challenges, discussing strategies to overcome these barriers, motivating the patient, and setting realistic expectations.",
+   "It should effectively sequence treatment interventions, ensuring that each component builds on the previous one and corresponds to the patient’s evolving therapeutic needs.",
+   "The model should evaluate the effectiveness of implemented treatments, incorporating patient feedback and adjusting the plan as necessary to ensure optimal outcomes."
 ]
+
 
 conversation = [
     ("Hi, Sarah. Welcome back to our fifth session.", "Hi, thanks. I’m here."),
