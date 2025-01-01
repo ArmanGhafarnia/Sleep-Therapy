@@ -4,7 +4,7 @@ import concurrent.futures
 import threading
 from typing import List
 from aspect_critic_eval_llm import AspectCritic
-from Goal6_eval_llm import ConversationEvaluator
+from Goal10_eval_llm import ConversationEvaluator
 from length_eval import length_checker
 from stay_on_track_eval_llm import evaluate_conversation_stay_on_track
 from topic_adherence_eval_llm import TopicAdherenceEvaluator
@@ -192,13 +192,17 @@ if __name__ == "__main__":
     # Initialize conversation history
     messages = [
         {"role": "system",
-         "content": "You are a sleep therapy expert tasked with helping patients overcome insomnia."
-                    " Today, your focus is on conducting an initial assessment using the Insomnia Intake Interview"
-                    " to gather detailed information about the patient's sleep patterns and issues."
-                    " Encourage the patient to maintain a Sleep Diary, and utilize the Insomnia Severity Index to"
-                    " quantify the severity of their symptoms."
-                    " ensuring you gather all necessary details without overwhelming the patient."
-                    "Avoid speaking too much when it's unnecessary."}
+         "content": "You are a sleep therapy expert focused on Cognitive Behavioral Therapy for Insomnia (CBT-I)."
+                    " Today’s session, the fifth in your series with the patient, is centered around refining and"
+                    " optimizing the strategies you’ve implemented so far. Your goal is to consolidate the patient's"
+                    " progress in improving sleep hygiene, adhering to a consistent sleep schedule, and utilizing"
+                    " relaxation techniques effectively. You'll discuss the patient’s successes and challenges with"
+                    " the implemented strategies, re-evaluate the sleep diary to adjust sleep windows if necessary,"
+                    " and reinforce cognitive restructuring techniques to address any persisting negative beliefs"
+                    " about sleep. This session aims to deepen the patient’s understanding of their sleep patterns"
+                    " and reinforce their skills in managing insomnia independently, ensuring they are equipped to"
+                    " maintain healthy sleep habits long-term. Avoid introducing new concepts or techniques to keep"
+                    " the focus on reinforcing and optimizing established practices."}
     ]
 
     # Define goals and goal names

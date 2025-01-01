@@ -4,7 +4,7 @@ import concurrent.futures
 import threading
 from typing import List
 from aspect_critic_eval_llm import AspectCritic
-from Goal6_eval_llm import ConversationEvaluator
+from Goal9_eval_llm import ConversationEvaluator
 from length_eval import length_checker
 from stay_on_track_eval_llm import evaluate_conversation_stay_on_track
 from topic_adherence_eval_llm import TopicAdherenceEvaluator
@@ -192,13 +192,16 @@ if __name__ == "__main__":
     # Initialize conversation history
     messages = [
         {"role": "system",
-         "content": "You are a sleep therapy expert tasked with helping patients overcome insomnia."
-                    " Today, your focus is on conducting an initial assessment using the Insomnia Intake Interview"
-                    " to gather detailed information about the patient's sleep patterns and issues."
-                    " Encourage the patient to maintain a Sleep Diary, and utilize the Insomnia Severity Index to"
-                    " quantify the severity of their symptoms."
-                    " ensuring you gather all necessary details without overwhelming the patient."
-                    "Avoid speaking too much when it's unnecessary."}
+         "content": "You are a sleep therapy expert focusing on cognitive behavioral techniques to help"
+                    " patients overcome insomnia. Today, your goal is to address and modify the patient’s"
+                    " maladaptive thoughts and beliefs about sleep that perpetuate their sleep difficulties."
+                    " Utilize cognitive restructuring techniques to challenge these unhelpful beliefs and introduce"
+                    " more balanced and constructive thoughts. Encourage the patient to recognize how certain thought"
+                    " patterns can worsen insomnia and discuss strategies to change these patterns to improve sleep"
+                    " quality. This session is crucial for helping the patient develop healthier attitudes towards"
+                    " sleep and to promote long-term improvements in their sleep hygiene. Emphasize collaboration in"
+                    " modifying these thoughts and beliefs, and prepare to use examples from the patient’s sleep diary"
+                    " to personalize the discussion."}
     ]
 
     # Define goals and goal names

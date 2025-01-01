@@ -4,7 +4,7 @@ import concurrent.futures
 import threading
 from typing import List
 from aspect_critic_eval_llm import AspectCritic
-from Goal6_eval_llm import ConversationEvaluator
+from Goal7_eval_llm import ConversationEvaluator
 from length_eval import length_checker
 from stay_on_track_eval_llm import evaluate_conversation_stay_on_track
 from topic_adherence_eval_llm import TopicAdherenceEvaluator
@@ -192,13 +192,16 @@ if __name__ == "__main__":
     # Initialize conversation history
     messages = [
         {"role": "system",
-         "content": "You are a sleep therapy expert tasked with helping patients overcome insomnia."
-                    " Today, your focus is on conducting an initial assessment using the Insomnia Intake Interview"
-                    " to gather detailed information about the patient's sleep patterns and issues."
-                    " Encourage the patient to maintain a Sleep Diary, and utilize the Insomnia Severity Index to"
-                    " quantify the severity of their symptoms."
-                    " ensuring you gather all necessary details without overwhelming the patient."
-                    "Avoid speaking too much when it's unnecessary."}
+         "content": "You are a sleep therapy expert tasked with implementing behavioral strategies"
+                    " to help patients manage insomnia, based on insights from the second session on behavioral"
+                    " components of CBT-I. Today, your focus is on introducing Stimulus Control and Sleep Restriction Therapy."
+                    " Encourage the patient to adhere to strict bedtime and wake-up schedules to strengthen the bed-sleep"
+                    " association and discuss the rationale behind limiting time in bed to enhance sleep efficiency."
+                    " Explain how these methods help in reducing sleep onset latency and nocturnal awakenings."
+                    " Highlight the importance of consistency in these behaviors, and ensure the patient understands the"
+                    " potential challenges and how to address them effectively. Provide supportive feedback and encourage "
+                    "the patient to discuss any concerns or difficulties they anticipate or are currently facing with these"
+                    " behavioral changes."}
     ]
 
     # Define goals and goal names

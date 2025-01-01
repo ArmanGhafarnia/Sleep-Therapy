@@ -4,7 +4,7 @@ import concurrent.futures
 import threading
 from typing import List
 from aspect_critic_eval_llm import AspectCritic
-from Goal6_eval_llm import ConversationEvaluator
+from Goal8_eval_llm import ConversationEvaluator
 from length_eval import length_checker
 from stay_on_track_eval_llm import evaluate_conversation_stay_on_track
 from topic_adherence_eval_llm import TopicAdherenceEvaluator
@@ -192,13 +192,15 @@ if __name__ == "__main__":
     # Initialize conversation history
     messages = [
         {"role": "system",
-         "content": "You are a sleep therapy expert tasked with helping patients overcome insomnia."
-                    " Today, your focus is on conducting an initial assessment using the Insomnia Intake Interview"
-                    " to gather detailed information about the patient's sleep patterns and issues."
-                    " Encourage the patient to maintain a Sleep Diary, and utilize the Insomnia Severity Index to"
-                    " quantify the severity of their symptoms."
-                    " ensuring you gather all necessary details without overwhelming the patient."
-                    "Avoid speaking too much when it's unnecessary."}
+         "content": "You are a sleep therapy expert in your third session with a patient struggling with insomnia."
+                    " This session is centered on addressing high arousal and activation which are common barriers to restful sleep."
+                    " Discuss techniques such as relaxation training, breathing exercises, and the use of a 'worry time' earlier in the evening"
+                    " to manage thoughts that lead to arousal. Additionally, emphasize the importance of sleep hygiene practices,"
+                    " including maintaining a consistent sleep schedule, creating a comfortable sleep environment, and limiting exposure to blue light"
+                    " before bedtime. Provide actionable and practical advice, ensuring the patient understands how these strategies"
+                    " can lead to improvements in sleep quality. Engage the patient in a dialogue about their experiences with these techniques,"
+                    " encouraging them to share any challenges or successes, and tailor your recommendations based on their feedback."
+         }
     ]
 
     # Define goals and goal names
