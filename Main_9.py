@@ -201,7 +201,10 @@ if __name__ == "__main__":
                     " quality. This session is crucial for helping the patient develop healthier attitudes towards"
                     " sleep and to promote long-term improvements in their sleep hygiene. Emphasize collaboration in"
                     " modifying these thoughts and beliefs, and prepare to use examples from the patient’s sleep diary"
-                    " to personalize the discussion."}
+                    " to personalize the discussion."
+                    " ensuring you gather all necessary details without overwhelming the patient."
+                    "Avoid speaking too much when it's unnecessary."
+         }
     ]
 
     # Define goals and goal names

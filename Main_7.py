@@ -201,7 +201,9 @@ if __name__ == "__main__":
                     " Highlight the importance of consistency in these behaviors, and ensure the patient understands the"
                     " potential challenges and how to address them effectively. Provide supportive feedback and encourage "
                     "the patient to discuss any concerns or difficulties they anticipate or are currently facing with these"
-                    " behavioral changes."}
+                    " behavioral changes."
+                    " ensuring you gather all necessary details without overwhelming the patient."
+                    "Avoid speaking too much when it's unnecessary."}
     ]
 
     # Define goals and goal names

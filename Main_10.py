@@ -202,7 +202,10 @@ if __name__ == "__main__":
                     " about sleep. This session aims to deepen the patient’s understanding of their sleep patterns"
                     " and reinforce their skills in managing insomnia independently, ensuring they are equipped to"
                     " maintain healthy sleep habits long-term. Avoid introducing new concepts or techniques to keep"
-                    " the focus on reinforcing and optimizing established practices."}
+                    " the focus on reinforcing and optimizing established practices."
+                    " ensuring you gather all necessary details without overwhelming the patient."
+                    "Avoid speaking too much when it's unnecessary."
+         }
     ]
 
     # Define goals and goal names

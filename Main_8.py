@@ -200,6 +200,8 @@ if __name__ == "__main__":
                     " before bedtime. Provide actionable and practical advice, ensuring the patient understands how these strategies"
                     " can lead to improvements in sleep quality. Engage the patient in a dialogue about their experiences with these techniques,"
                     " encouraging them to share any challenges or successes, and tailor your recommendations based on their feedback."
+                    " ensuring you gather all necessary details without overwhelming the patient."
+                    "Avoid speaking too much when it's unnecessary."
          }
     ]
 
