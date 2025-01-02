@@ -283,7 +283,7 @@ if __name__ == "__main__":
     initialize_goal_progress(len(goals))
     current_goal_index = 0
 
-    for i in range(100):
+    while True:
         user_input = input(f"{GREEN}You:{RESET} ")
 
         if user_input.lower() == 'quit':
@@ -349,7 +349,7 @@ if __name__ == "__main__":
         if conditions["all_goals_achieved"] and conditions["length_within_range"]:
             messages.append({"role": "system",
                              "content": "Excellent work! All goals have been achieved and our discussion has been efficiently conducted within the ideal length. Let's conclude this session on a positive note. Thank you for your contributions today; you’ve made significant progress. Please prepare any final thoughts or recommendations for the patient."})
-
+            break
         if conditions["all_goals_achieved"] and not conditions["length_within_range"]:
             messages.append({"role": "system",
                              "content": "All therapy goals have been successfully achieved; however, the session's length has exceeded the ideal range. Please summarize the discussion succinctly and conclude the session professionally. Focus on key takeaways and next steps for the patient to follow outside the session."})
