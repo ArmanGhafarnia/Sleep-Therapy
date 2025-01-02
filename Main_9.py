@@ -270,7 +270,7 @@ if __name__ == "__main__":
     initialize_goal_progress(len(goals))
     current_goal_index = 0
 
-    for i in range(100):
+    while True:
         user_input = input(f"{GREEN}You:{RESET} ")
 
         if user_input.lower() == 'quit':
