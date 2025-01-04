@@ -20,7 +20,19 @@ BLUE = '\033[94m'
 
 # Patient profile for the patient LLM
 PATIENT_PROFILE = """You are a 24-year-old software developer who has been struggling with insomnia for the past 6 months.
-[previous symptoms and environment details...]
+Your symptoms include:
+- Difficulty falling asleep (takes 1-2 hours to fall asleep)
+- Waking up multiple times during the night
+- Feeling tired and irritable during the day
+- Using caffeine extensively to stay awake (4-5 cups of coffee daily)
+- Often working late on your laptop until bedtime
+- Anxiety about work deadlines affecting your sleep
+
+Your sleep environment:
+- Live alone in a studio apartment
+- City environment with some noise
+- Use phone in bed frequently
+- Irregular sleep schedule due to work demands
 
 Response style:
 - Be direct and concise
@@ -368,7 +380,14 @@ if __name__ == "__main__":
 
             if current_goal_index >= len(goals):
                 print(f"{GREEN}All goals achieved. The session is complete!{RESET}")
-                break
+                conditions["all_goals_achieved"] = True
+                print(f"\n{BLUE}Conditions:{RESET}")
+                for condition, status in conditions.items():
+                    # Special handling for length_within_range which is now a string state
+                    if condition == "length_within_range":
+                        print(f"{condition}: {status}")  # Print actual state value
+                    else:
+                        print(f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
             else:
                 print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
                 current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
@@ -396,11 +415,15 @@ if __name__ == "__main__":
         if conditions["all_goals_achieved"] and conditions["length_within_range"] == "pass":
             messages.append({"role": "system",
                              "content": "Excellent work! All goals have been achieved and our discussion has been efficiently conducted within the ideal length. Let's conclude this session on a positive note. Thank you for your contributions today; you've made significant progress. Please prepare any final thoughts or recommendations for the patient."})
+            print('lolo')
             break
 
         if conditions["all_goals_achieved"] and conditions["length_within_range"] == "too_short":
             messages.append({"role": "system",
                              "content": "All therapy goals have been successfully achieved; however, the session's length has exceeded the ideal range. Please summarize the discussion succinctly and conclude the session professionally. Focus on key takeaways and next steps for the patient to follow outside the session."})
+
+        if conditions["all_goals_achieved"] and conditions["length_within_range"] == "too_long":
+            break
 
         if not conditions["aspect_critics"]:
             messages.append({"role": "system",
