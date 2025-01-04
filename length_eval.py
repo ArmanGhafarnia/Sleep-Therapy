@@ -1,9 +1,10 @@
 def length_checker(conversation):
     # Define thresholds
-    min_words = 5500
-    max_words = 6500
-    min_chars = 30250
-    max_chars = 35750
+    # For ~30-60 minute therapy session with 8 goals
+    min_words = 1500  # ~30-35 words per exchange
+    max_words = 3000  # ~60-70 words per exchange
+    min_chars = 9000  # ~180-200 chars per exchange
+    max_chars = 18000  # ~350-400 chars per exchange
 
     # Initialize counts
     total_word_count = 0
