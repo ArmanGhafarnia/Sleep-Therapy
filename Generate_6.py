@@ -42,6 +42,7 @@ Response style:
 - Stay focused on describing your sleep issues and answering questions
 """
 
+
 # Lazy initialization of evaluators to reduce initial delay
 class LazyEvaluator:
     def __init__(self, initializer):
@@ -138,12 +139,15 @@ def format_last_conversation_tuple(conversation_history):
 
 # Goal progress tracking
 goal_progress = {}
-required_progress = 4  # Define how many successful exchanges are needed to achieve the goal
+required_progress = 0.95
+goal_stagnant_count = {}
+MAX_STAGNANT_ROUNDS = 6  # Skip goal after 6 rounds of no progress
 
 
 def initialize_goal_progress(num_goals):
-    global goal_progress
+    global goal_progress, goal_stagnant_count
     goal_progress = {i: 0 for i in range(num_goals)}
+    goal_stagnant_count = {i: 0 for i in range(num_goals)}
 
 
 def evaluate_conditions_incrementally(conversation_history: List[dict], evaluators: dict, last_index: int,
@@ -178,11 +182,22 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
         goal_name = goal_evaluator.goal_names[current_goal_index]
         goal_description = goal_evaluator.goals[current_goal_index]
 
-        if goal_evaluator.check_goal_achieved(goal_description, formatted_conversation):
-            goal_progress[current_goal_index] += 1
-            print(f"Progress for Goal '{goal_name}': {goal_progress[current_goal_index]}/{required_progress}")
+        current_progress = goal_evaluator.check_goal_achieved(goal_description, formatted_conversation)
+
+        # Only update progress if current progress is higher
+        if current_progress > goal_progress[current_goal_index]:
+            goal_progress[current_goal_index] = current_progress
+            goal_stagnant_count[current_goal_index] = 0
         else:
-            print(f"No progress for Goal '{goal_name}' in this exchange.")
+            goal_stagnant_count[current_goal_index] += 1
+
+        print(f"Progress for Goal '{goal_name}': {goal_progress[current_goal_index]:.2f}/{required_progress}")
+        print(f"Stagnant rounds: {goal_stagnant_count[current_goal_index]}/{MAX_STAGNANT_ROUNDS}")
+
+        # If goal has stagnated, skip it but don't mark as achieved
+        if goal_stagnant_count[current_goal_index] >= MAX_STAGNANT_ROUNDS:
+            print(f"Goal '{goal_name}' has stagnated. Moving to next goal.")
+            return False  # Return false but handle goal transition separately
 
         return goal_progress[current_goal_index] >= required_progress
 
@@ -270,8 +285,8 @@ if __name__ == "__main__":
     goal_names = [
         "Gather Information",
         "Assessing Circadian Tendencies and Factors",
-        "Evaluating Comorbidities",
         "Utilization of the Sleep Diary",
+        "Evaluating Comorbidities",
         "Open-Ended Questions",
         "Assess Intake Interview",
         "Identifies Unhealthy Sleep Practices",
@@ -281,8 +296,8 @@ if __name__ == "__main__":
     goals = [
         "The model should effectively gather comprehensive information about the patient's current sleep issues, including difficulty falling or staying asleep, the frequency of sleep disruptions, and their impact on daily life and information about any past treatments and interventions the patient has tried, and their outcomes.",
         "The model needs to accurately assess the patient's circadian rhythm influences on sleep problems, such as being a 'night owl' or 'morning person' and how these tendencies affect their sleep quality and timing.",
-        "It is crucial that the model explores and identifies any psychiatric, medical, or other sleep disorders that coexist with the insomnia.",
         "The model should encourage the patient to maintain a sleep diary as a critical tool for collecting accurate data about their sleep patterns.",
+        "It is crucial that the model explores and identifies any psychiatric, medical, or other sleep disorders that coexist with the insomnia.",
         "The model should ask open-ended questions that encourage the patient to describe their sleep problems in detail.",
         "Assess the model's proficiency in conducting a thorough intake interview that covers key areas necessary for an accurate understanding and subsequent treatment of insomnia. This includes gathering detailed information on the patient's sleep patterns, lifestyle and environmental influences, psychological and emotional factors, and medical history.",
         "The model identifies and discusses unhealthy sleep practices, such as poor sleep hygiene, the use of substances that disrupt sleep (like caffeine or alcohol close to bedtime), and other behaviors detrimental to sleep like excessive bedtime worry or screen time before sleep.",
@@ -292,10 +307,10 @@ if __name__ == "__main__":
     goal_specific_prompts = {
         "Gather Information": "Focus on gathering comprehensive information about the patient's current sleep issues, including difficulty falling or staying asleep, the frequency of sleep disruptions, and their impact on daily life. Encourage the patient to describe in detail when these issues typically occur and how often, as well as the effects they have on their mood, energy, and day-to-day activities. Collect detailed information about any past treatments and interventions the patient has tried, as well as their outcomes.",
         "Assessing Circadian Tendencies and Factors": "Focus on assessing the patient's circadian rhythm tendencies by exploring their natural sleep-wake patterns, preference for morning or evening activities, and how these preferences affect their daily functioning. Inquire about their most and least energetic times of day and any regular patterns in their alertness and sleepiness. Use this information to understand how their internal clock may be influencing their insomnia and discuss potential adjustments to align their lifestyle more closely with their circadian rhythms for improved sleep.",
-        "Evaluating Comorbidities": "Thoroughly evaluate any comorbid psychiatric, medical, or other sleep disorders that may coexist with the patient's insomnia. Ask detailed questions about the patient's overall health, including any chronic conditions, mental health issues, and medications that might affect sleep. Assess how these comorbid conditions influence their sleep patterns and overall wellbeing. Use this comprehensive evaluation to adjust the treatment plan to address both insomnia and the complexities introduced by these comorbidities.",
         "Utilization of the Sleep Diary": "Encourage the patient to maintain a sleep diary to meticulously record their daily sleep patterns, including bedtime, wake time, total sleep time, perceived sleep quality, and daytime symptoms. Explain the importance of this diary in identifying patterns and triggers affecting their sleep. Emphasize how the collected data will be used to inform and tailor treatment strategies, making adjustments based on observed patterns to improve the effectiveness of the interventions.",
+        "Evaluating Comorbidities": "Thoroughly evaluate any comorbid psychiatric, medical, or other sleep disorders that may coexist with the patient's insomnia. Ask detailed questions about the patient's overall health, including any chronic conditions, mental health issues, and medications that might affect sleep. Assess how these comorbid conditions influence their sleep patterns and overall wellbeing. Use this comprehensive evaluation to adjust the treatment plan to address both insomnia and the complexities introduced by these comorbidities.",
         "Open-Ended Questions": "Employ open-ended questions to enable a deep dive into the patient's subjective sleep experiences and perceptions. Focus on eliciting detailed descriptions of the patient's typical sleep patterns, nightly routines, and any specific sleep disturbances they encounter. Use these questions to facilitate a comprehensive dialogue that encourages the patient to share more about their sleep challenges, providing valuable insights for diagnosis and treatment planning.",
-        "Assess intake interview": "Conduct a thorough intake interview to comprehensively assess the patient's sleep problems and related factors. Focus on gathering detailed information about the patient's sleep history, current sleep patterns, lifestyle habits affecting sleep, and any previous sleep treatments. Include questions about psychological, environmental, and physiological factors that could impact sleep. This information will form the basis for understanding the full scope of the insomnia and planning effective treatment.",
+        "Assess Intake Interview": "Conduct a thorough intake interview to comprehensively assess the patient's sleep problems and related factors. Focus on gathering detailed information about the patient's sleep history, current sleep patterns, lifestyle habits affecting sleep, and any previous sleep treatments. Include questions about psychological, environmental, and physiological factors that could impact sleep. This information will form the basis for understanding the full scope of the insomnia and planning effective treatment.",
         "Identifies Unhealthy Sleep Practices": "identify and discuss any unhealthy sleep practices that the patient engages in, such as irregular sleep schedules, stimulating activities before bedtime, or use of electronics in the bedroom. Encourage the patient to recognize these behaviors and understand how they may negatively impact sleep quality. Use this opportunity to educate the patient on the effects of these habits and begin to explore changes that could lead to improved sleep hygiene and better sleep quality.",
         "Treatment Goals Establishment": "Work collaboratively with the patient to establish realistic and achievable treatment goals based on the comprehensive assessment findings. Discuss what the patient hopes to accomplish through treatment and align these expectations with practical strategies and interventions. Ensure these goals are specific, measurable, and tailored to the individual's needs, considering their lifestyle, sleep patterns, and any comorbid conditions. Regularly revisit and adjust these goals as needed to reflect the patient's progress and any new insights gained during therapy."
     }
@@ -363,7 +378,8 @@ if __name__ == "__main__":
         # 3. Check conditions after both messages are added
         conditions = evaluate_conditions_incrementally(messages, {k: v() for k, v in evaluators.items()},
                                                        last_evaluated_index, current_goal_index)
-
+        if conditions["all_goals_achieved"]:
+            break
         print(f"\n{BLUE}Conditions:{RESET}")
         for condition, status in conditions.items():
             # Special handling for length_within_range which is now a string state
@@ -372,33 +388,39 @@ if __name__ == "__main__":
             else:
                 print(f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
 
-        # Handle goal progress and system messages
-        if conditions["current_goal_achieved"]:
-            print(f"{GREEN}Goal '{goal_names[current_goal_index]}' achieved.{RESET}")
-            goal_progress[current_goal_index] = required_progress
+        if goal_stagnant_count[current_goal_index] >= MAX_STAGNANT_ROUNDS:
+            print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' skipped due to stagnation.{RESET}")
             current_goal_index += 1
+            conditions["current_goal_achieved"] = False  # Keep as not achieved
 
-            if current_goal_index >= len(goals):
-                print(f"{GREEN}All goals achieved. The session is complete!{RESET}")
-                conditions["all_goals_achieved"] = True
-                print(f"\n{BLUE}Conditions:{RESET}")
-                for condition, status in conditions.items():
-                    # Special handling for length_within_range which is now a string state
-                    if condition == "length_within_range":
-                        print(f"{condition}: {status}")  # Print actual state value
-                    else:
-                        print(f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
+        else:  # Handle goal progress and system messages
+            if conditions["current_goal_achieved"]:
+                print(f"{GREEN}Goal '{goal_names[current_goal_index]}' achieved.{RESET}")
+                goal_progress[current_goal_index] = required_progress
+                current_goal_index += 1
+
+                if current_goal_index >= len(goals):
+                    print(f"{GREEN}All goals achieved. The session is complete!{RESET}")
+                    conditions["all_goals_achieved"] = True
+                    print(f"\n{BLUE}Conditions:{RESET}")
+                    for condition, status in conditions.items():
+                        # Special handling for length_within_range which is now a string state
+                        if condition == "length_within_range":
+                            print(f"{condition}: {status}")  # Print actual state value
+                        else:
+                            print(
+                                f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
+                else:
+                    print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
+                    current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
+                    print(f"prompt : {current_goal_prompt}")
+                    messages.append({"role": "system", "content": current_goal_prompt})
             else:
-                print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
+                print(
+                    f"{YELLOW}Goal '{goal_names[current_goal_index]}' not yet achieved. Progress: {goal_progress[current_goal_index]:.2f}/{required_progress}.{RESET}")
                 current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
                 print(f"prompt : {current_goal_prompt}")
                 messages.append({"role": "system", "content": current_goal_prompt})
-        else:
-            print(
-                f"{YELLOW}Goal '{goal_names[current_goal_index]}' not yet achieved. Progress: {goal_progress[current_goal_index]}/{required_progress}.{RESET}")
-            current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
-            print(f"prompt : {current_goal_prompt}")
-            messages.append({"role": "system", "content": current_goal_prompt})
 
         if not conditions["adhered_to_topic"]:
             messages.append({"role": "system",
@@ -461,9 +483,12 @@ for check, result in results.items():
 
 print("\n3. Goal Accuracy Evaluation:")
 goal_evaluator = ConversationEvaluator(goals=goals, goal_names=goal_names)
+ACHIEVEMENT_THRESHOLD = 0.85  # Match with the required_progress value
+
 for i, (goal, goal_name) in enumerate(zip(goals, goal_names)):
-    goal_achieved = goal_evaluator.check_goal_achieved(goal, final_conversation)
-    print(f"{goal_name}: {'✓' if goal_achieved else '✗'}")
+    goal_score = goal_evaluator.check_goal_achieved(goal, final_conversation)
+    is_achieved = goal_score >= ACHIEVEMENT_THRESHOLD
+    print(f"{goal_name}: {'✓' if is_achieved else '✗'} (Score: {goal_score:.2f})")
 
 print("\n4. Topic Adherence Evaluation:")
 topic_evaluator = TopicAdherenceEvaluator()
