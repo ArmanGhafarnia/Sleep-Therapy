@@ -3,13 +3,13 @@ import textwrap
 import concurrent.futures
 import threading
 from typing import List
-from aspect_critic_eval_llm import AspectCritic
-from Goal6_eval_llm import ConversationEvaluator
-from length_eval import length_checker
-from stay_on_track_eval_llm import evaluate_conversation_stay_on_track
-from topic_adherence_eval_llm import TopicAdherenceEvaluator
+from Aspect_Aritic_Aval_LLM import AspectCritic
+from Goal_Accuracy import ConversationEvaluator
+from Length_Eval import length_checker
+from Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
+from Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
 import time
-import asyncio
+
 
 
 # Initialize your API key
