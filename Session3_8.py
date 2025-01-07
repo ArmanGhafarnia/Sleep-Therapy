@@ -243,8 +243,14 @@ if __name__ == "__main__":
                     " before bedtime. Provide actionable and practical advice, ensuring the patient understands how these strategies"
                     " can lead to improvements in sleep quality. Engage the patient in a dialogue about their experiences with these techniques,"
                     " encouraging them to share any challenges or successes, and tailor your recommendations based on their feedback."
+                    " Additional communication guidelines:"
+                    " - Be direct and precise in your questions and responses"
+                    " - Ask one clear question at a time"
+                    " - Avoid unnecessary acknowledgments or wrap-up statements"
+                    " - Skip phrases like 'feel free to reach out', 'take care', 'looking forward to'"
+                    " - Focus only on relevant therapeutic content"
+                    " - Remove redundant courtesies and pleasantries"
                     " ensuring you gather all necessary details without overwhelming the patient."
-                    "Avoid speaking too much when it's unnecessary."
          }
     ]
 

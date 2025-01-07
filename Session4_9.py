@@ -245,8 +245,14 @@ if __name__ == "__main__":
                     " sleep and to promote long-term improvements in their sleep hygiene. Emphasize collaboration in"
                     " modifying these thoughts and beliefs, and prepare to use examples from the patient’s sleep diary"
                     " to personalize the discussion."
+                    " Additional communication guidelines:"
+                    " - Be direct and precise in your questions and responses"
+                    " - Ask one clear question at a time"
+                    " - Avoid unnecessary acknowledgments or wrap-up statements"
+                    " - Skip phrases like 'feel free to reach out', 'take care', 'looking forward to'"
+                    " - Focus only on relevant therapeutic content"
+                    " - Remove redundant courtesies and pleasantries"
                     " ensuring you gather all necessary details without overwhelming the patient."
-                    "Avoid speaking too much when it's unnecessary."
          }
     ]
 

@@ -246,8 +246,14 @@ if __name__ == "__main__":
                     " and reinforce their skills in managing insomnia independently, ensuring they are equipped to"
                     " maintain healthy sleep habits long-term. Avoid introducing new concepts or techniques to keep"
                     " the focus on reinforcing and optimizing established practices."
+                    " Additional communication guidelines:"
+                    " - Be direct and precise in your questions and responses"
+                    " - Ask one clear question at a time"
+                    " - Avoid unnecessary acknowledgments or wrap-up statements"
+                    " - Skip phrases like 'feel free to reach out', 'take care', 'looking forward to'"
+                    " - Focus only on relevant therapeutic content"
+                    " - Remove redundant courtesies and pleasantries"
                     " ensuring you gather all necessary details without overwhelming the patient."
-                    "Avoid speaking too much when it's unnecessary."
          }
     ]
 

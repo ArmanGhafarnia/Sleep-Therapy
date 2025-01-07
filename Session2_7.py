@@ -245,8 +245,15 @@ if __name__ == "__main__":
                     " potential challenges and how to address them effectively. Provide supportive feedback and encourage "
                     "the patient to discuss any concerns or difficulties they anticipate or are currently facing with these"
                     " behavioral changes."
+                    " Additional communication guidelines:"
+                    " - Be direct and precise in your questions and responses"
+                    " - Ask one clear question at a time"
+                    " - Avoid unnecessary acknowledgments or wrap-up statements"
+                    " - Skip phrases like 'feel free to reach out', 'take care', 'looking forward to'"
+                    " - Focus only on relevant therapeutic content"
+                    " - Remove redundant courtesies and pleasantries"
                     " ensuring you gather all necessary details without overwhelming the patient."
-                    "Avoid speaking too much when it's unnecessary."}
+         }
     ]
 
     goal_names = [
@@ -421,7 +428,6 @@ if __name__ == "__main__":
         if not conditions["aspect_critics"]:
             messages.append({"role": "system",
                              "content": "Make sure to follow ethical guidelines. Review the latest response for adherence to ethical and professional standards. Ensure that your responses avoid any inappropriate language, advice, or topics that could be harmful or offensive. It is crucial that our conversation maintains the highest standards of professionalism and respect towards the patient. Adjust your responses accordingly to reflect these priorities."})
-
 
 
 def wait_for_rate_limit_reset():
