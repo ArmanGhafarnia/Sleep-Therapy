@@ -11,7 +11,6 @@ from topic_adherence_eval_llm import TopicAdherenceEvaluator
 import time
 import asyncio
 
-
 # Initialize your API key
 openai.api_key = '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'
 
@@ -32,8 +31,6 @@ class LazyEvaluator:
         if self.instance is None:
             self.instance = self.initializer()
         return self.instance
-
-
 
 
 def chat_with_gpt(messages, model="gpt-4o", max_retries=5):
@@ -349,7 +346,7 @@ if __name__ == "__main__":
         conditions = evaluate_conditions_incrementally(messages, {k: v() for k, v in evaluators.items()},
                                                        last_evaluated_index, current_goal_index)
         if not conditions["all_goals_achieved"]:
-            
+
             print(f"\n{BLUE}Conditions:{RESET}")
             for condition, status in conditions.items():
                 # Special handling for length_within_range which is now a string state
@@ -421,6 +418,7 @@ if __name__ == "__main__":
             messages.append({"role": "system",
                              "content": "Make sure to follow ethical guidelines. Review the latest response for adherence to ethical and professional standards. Ensure that your responses avoid any inappropriate language, advice, or topics that could be harmful or offensive. It is crucial that our conversation maintains the highest standards of professionalism and respect towards the patient. Adjust your responses accordingly to reflect these priorities."})
 
+
 # Add this function near the start of your Generate_6.py file
 # Add this function near the start of your Generate_6.py file
 def wait_for_rate_limit_reset():
@@ -428,6 +426,7 @@ def wait_for_rate_limit_reset():
     print("\nWaiting 60 seconds for rate limits to reset before final evaluation...")
     time.sleep(60)  # Wait for 60 seconds
     print("Resuming evaluation...\n")
+
 
 # Then modify the final evaluation section to include the delay:
 print("\n" + "=" * 50)
