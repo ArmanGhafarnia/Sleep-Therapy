@@ -472,8 +472,7 @@ if __name__ == "__main__":
             messages.append({"role": "system",
                              "content": "Make sure to follow ethical guidelines. Review the latest response for adherence to ethical and professional standards. Ensure that your responses avoid any inappropriate language, advice, or topics that could be harmful or offensive. It is crucial that our conversation maintains the highest standards of professionalism and respect towards the patient. Adjust your responses accordingly to reflect these priorities."})
 
-# Add this function near the start of your Generate_6.py file
-# Add this function near the start of your Generate_6.py file
+
 def wait_for_rate_limit_reset():
     """Wait for rate limits to reset before final evaluation"""
     print("\nWaiting 60 seconds for rate limits to reset before final evaluation...")
