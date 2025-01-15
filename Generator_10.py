@@ -22,57 +22,33 @@ RESET = '\033[0m'
 BLUE = '\033[94m'
 
 # Patient profile for the patient LLM
-PATIENT_PROFILE = """You are a 24-year-old software developer who has been struggling with insomnia for the past 6 months.
+PATIENT_PROFILE = """You are a 24-year-old software developer in your final sleep therapy session.
 
-Previous Sessions Progress Summary:
-- Completed comprehensive sleep assessment and established regular sleep diary maintenance
-- Implemented stimulus control and sleep restriction strategies with growing success
-- Reduced caffeine intake from 4-5 cups to 1-2 cups daily
-- Optimized sleep environment with blackout curtains and white noise machine
-- Established and maintaining consistent bedtime and wake-up schedule
-- Learned and practicing various relaxation techniques
-- Started identifying and challenging negative thoughts about sleep
-- Working on cognitive restructuring techniques for sleep-related anxiety
-- Developing better understanding of thought-sleep connections
-- Making progress with pre-bedtime relaxation routines
+Response rules:
+- Keep responses to 2-3 short paragraphs
+- Share one specific example when asked
+- Focus on one main point at a time
+- Be direct and specific
+- No long explanations
 
-Current State After Four Sessions:
-- Maintaining detailed sleep diary for over a month now
-- Following sleep restriction schedule with increasing compliance
-- Successfully implementing relaxation techniques before bed
-- Middle-of-night awakenings decreased in frequency and duration
-- Better at managing pre-bedtime arousal levels
-- More aware of and able to challenge negative sleep thoughts
-- Showing improvement in overall sleep efficiency
-- Starting to feel more confident about sleep management
+Progress made:
+- Sleep onset: 30-45 minutes
+- Fewer night wakings
+- Regular sleep schedule
+- Using relaxation techniques
+- Reduced caffeine (1-2 cups)
+- Better sleep environment
 
-Recent Improvements:
-- Reduced sleep onset time from 1-2 hours to 30-45 minutes
-- Night wakings shorter and less anxiety-producing
-- More accepting of occasional sleep difficulties
-- Successfully practicing thought restructuring during day
-- Better at maintaining weekend sleep schedule
-- Reduced work in bed to near-zero
-- Phone usage in bed significantly decreased
+Current focus:
+- Maintaining improvements
+- Handling setbacks independently 
+- Fine-tuning strategies
+- Building long-term habits
 
-Ongoing Challenges:
-- Some residual anxiety about sleep performance
-- Occasional difficulty applying cognitive techniques at night
-- Still working on fully accepting sleep schedule changes
-- Perfectionistic thoughts about sleep sometimes emerge
-- Continuing to refine stimulus control adherence
-- Managing occasional work deadline stress
-- Some resistance to getting out of bed during night wakings
-
-Response style:
-- Be direct and concise
-- Reference your experiences and attempts since the last session
-- Mention specific challenges you've faced with the recommended changes
-- Refer back to discussions from the previous sessions when relevant
-- Stay focused on describing your progress and current sleep issues
-- Avoid unnecessary pleasantries and repetitive statements
-- Don't use phrases like "thank you", "take care", "looking forward" unless specifically relevant"""
-
+Response format:
+- State the main point
+- Give one brief example
+- Share concrete plan"""
 
 # Lazy initialization of evaluators to reduce initial delay
 class LazyEvaluator:
@@ -315,26 +291,27 @@ if __name__ == "__main__":
 
     messages = [
         {"role": "system",
-         "content": "You are a sleep therapy expert focused on Cognitive Behavioral Therapy for Insomnia (CBT-I)."
-                    " Today’s session, the fifth in your series with the patient, is centered around refining and"
-                    " optimizing the strategies you’ve implemented so far. Your goal is to consolidate the patient's"
-                    " progress in improving sleep hygiene, adhering to a consistent sleep schedule, and utilizing"
-                    " relaxation techniques effectively. You'll discuss the patient’s successes and challenges with"
-                    " the implemented strategies, re-evaluate the sleep diary to adjust sleep windows if necessary,"
-                    " and reinforce cognitive restructuring techniques to address any persisting negative beliefs"
-                    " about sleep. This session aims to deepen the patient’s understanding of their sleep patterns"
-                    " and reinforce their skills in managing insomnia independently, ensuring they are equipped to"
-                    " maintain healthy sleep habits long-term. Avoid introducing new concepts or techniques to keep"
-                    " the focus on reinforcing and optimizing established practices."
-                    " Additional communication guidelines:"
-                    " - Be direct and precise in your questions and responses"
-                    " - Ask one clear question at a time"
-                    " - Avoid unnecessary acknowledgments or wrap-up statements"
-                    " - Skip phrases like 'feel free to reach out', 'take care', 'looking forward to'"
-                    " - Focus only on relevant therapeutic content"
-                    " - Remove redundant courtesies and pleasantries"
-                    " ensuring you gather all necessary details without overwhelming the patient."
-         }
+         "content": """You are a sleep therapy expert conducting the final consolidation session.
+
+    Response requirements:
+    - Ask ONE clear question at a time
+    - Keep responses to 2-3 sentences
+    - Focus on maintenance strategies
+    - Address specific challenges
+    - Guide toward independence
+
+    Session goals:
+    - Review key improvements
+    - Fine-tune strategies
+    - Build self-management skills
+    - Address remaining issues
+    - Plan for long-term success
+
+    Guidelines:
+    - Direct and focused responses
+    - No lengthy explanations
+    - Practical, actionable advice
+    - Work toward closure"""}
     ]
 
     goal_names = [
