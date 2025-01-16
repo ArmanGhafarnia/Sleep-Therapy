@@ -22,28 +22,35 @@ RESET = '\033[0m'
 BLUE = '\033[94m'
 
 # Patient profile for the patient LLM
-PATIENT_PROFILE = """You are a 24-year-old software developer continuing sleep therapy.
+PATIENT_PROFILE = """You are a 45-year-old high school teacher in your third sleep therapy session.
 
 Communication style:
 - Keep responses focused and concise (2-3 sentences)
 - Share specific challenges or improvements since last session
 - Express concerns briefly but clearly
 - If something is unclear, ask one focused question
-- Describe only the most relevant details
 - Stay on the current topic
 
-Progress from last sessions:
-- Started using stimulus control and sleep restriction
-- Reduced caffeine (4-5 to 2-3 cups daily)
-- Created separate work area
-- Installed white noise machine and blackout curtains
-- Maintaining sleep diary for past two weeks
+Progress from previous sessions:
+- Following sleep restriction (11:30 PM - 6:00 AM)
+- Sleep efficiency improved to 80%
+- Removed TV and established reading corner
+- Room temperature optimized (68°F)
+- Spouse using medical interventions for snoring
+- Morning light exposure for 15 minutes daily
 
 Current challenges:
-- Middle-of-night awakenings (still occurring 2-3 times)
-- Work schedule disrupts sleep timing
-- Evening screen time affects wind-down
-- Sleep anxiety about performance"""
+- High mental arousal before bed (racing thoughts about teaching)
+- Physical tension during wind-down routine
+- Early morning anxiety (4:00-4:30 AM wakings)
+- Work-related dreams disrupting sleep
+- Difficulty returning to sleep after wakings
+
+Areas needing focus:
+- Managing pre-sleep mental activity
+- Physical relaxation techniques
+- Understanding sleep-wake cycle
+- Enhancing current relaxation strategies"""
 
 
 # Lazy initialization of evaluators to reduce initial delay
@@ -410,40 +417,40 @@ if __name__ == "__main__":
                     print(f"{condition}: {status}")  # Print actual state value
                 else:
                     print(f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
-
-            if goal_stagnant_count[current_goal_index] >= MAX_STAGNANT_ROUNDS:
-                print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' skipped due to stagnation.{RESET}")
-                current_goal_index += 1
-                conditions["current_goal_achieved"] = False  # Keep as not achieved
-
-            else:  # Handle goal progress and system messages
-                if conditions["current_goal_achieved"]:
-                    print(f"{GREEN}Goal '{goal_names[current_goal_index]}' achieved.{RESET}")
-                    goal_progress[current_goal_index] = required_progress
+            if current_goal_index < len(goals):
+                if goal_stagnant_count[current_goal_index] >= MAX_STAGNANT_ROUNDS:
+                    print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' skipped due to stagnation.{RESET}")
                     current_goal_index += 1
+                    conditions["current_goal_achieved"] = False  # Keep as not achieved
 
-                    if current_goal_index >= len(goals):
-                        print(f"{GREEN}All goals achieved. The session is complete!{RESET}")
-                        conditions["all_goals_achieved"] = True
-                        print(f"\n{BLUE}Conditions:{RESET}")
-                        for condition, status in conditions.items():
-                            # Special handling for length_within_range which is now a string state
-                            if condition == "length_within_range":
-                                print(f"{condition}: {status}")  # Print actual state value
-                            else:
-                                print(
-                                    f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
+                else:  # Handle goal progress and system messages
+                    if conditions["current_goal_achieved"]:
+                        print(f"{GREEN}Goal '{goal_names[current_goal_index]}' achieved.{RESET}")
+                        goal_progress[current_goal_index] = required_progress
+                        current_goal_index += 1
+
+                        if current_goal_index >= len(goals):
+                            print(f"{GREEN}All goals achieved. The session is complete!{RESET}")
+                            conditions["all_goals_achieved"] = True
+                            print(f"\n{BLUE}Conditions:{RESET}")
+                            for condition, status in conditions.items():
+                                # Special handling for length_within_range which is now a string state
+                                if condition == "length_within_range":
+                                    print(f"{condition}: {status}")  # Print actual state value
+                                else:
+                                    print(
+                                        f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
+                        else:
+                            print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
+                            current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
+                            print(f"prompt : {current_goal_prompt}")
+                            messages.append({"role": "system", "content": current_goal_prompt})
                     else:
-                        print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
+                        print(
+                            f"{YELLOW}Goal '{goal_names[current_goal_index]}' not yet achieved. Progress: {goal_progress[current_goal_index]:.2f}/{required_progress}.{RESET}")
                         current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
                         print(f"prompt : {current_goal_prompt}")
                         messages.append({"role": "system", "content": current_goal_prompt})
-                else:
-                    print(
-                        f"{YELLOW}Goal '{goal_names[current_goal_index]}' not yet achieved. Progress: {goal_progress[current_goal_index]:.2f}/{required_progress}.{RESET}")
-                    current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
-                    print(f"prompt : {current_goal_prompt}")
-                    messages.append({"role": "system", "content": current_goal_prompt})
 
         if not conditions["adhered_to_topic"]:
             messages.append({"role": "system",
