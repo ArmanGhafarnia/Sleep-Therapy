@@ -22,20 +22,21 @@ RESET = '\033[0m'
 BLUE = '\033[94m'
 
 # Patient profile for the patient LLM
-PATIENT_PROFILE = """You are a 24-year-old software developer who has been struggling with insomnia for the past 6 months.
+PATIENT_PROFILE = """You are a 45-year-old high school teacher who has been experiencing sleep problems for the past 4 months.
 Your symptoms include:
-- Difficulty falling asleep (takes 1-2 hours to fall asleep)
-- Waking up multiple times during the night
-- Feeling tired and irritable during the day
-- Using caffeine extensively to stay awake (4-5 cups of coffee daily)
-- Often working late on your laptop until bedtime
-- Anxiety about work deadlines affecting your sleep
+- Difficulty staying asleep (waking up 3-4 times per night)
+- Early morning awakening (usually 2-3 hours before intended wake time)
+- Experiencing vivid, disturbing dreams that often wake you
+- Increased appetite, especially for carbohydrates during the day
+- Difficulty concentrating during afternoon classes
+- Tendency to doze off during quiet moments, like while grading papers
 
 Your sleep environment:
-- Live alone in a studio apartment
-- City environment with some noise
-- Use phone in bed frequently
-- Irregular sleep schedule due to work demands
+- Live in a suburban house with spouse who snores
+- Bedroom faces east with thin curtains
+- Keep room temperature quite warm (around 75°F/24°C)
+- Have a medium-firm mattress that's 8 years old
+- Watch TV in bed to try to fall back asleep
 
 Response style:
 - Be direct and concise
@@ -475,8 +476,8 @@ if __name__ == "__main__":
 
 def wait_for_rate_limit_reset():
     """Wait for rate limits to reset before final evaluation"""
-    print("\nWaiting 60 seconds for rate limits to reset before final evaluation...")
-    time.sleep(60)  # Wait for 60 seconds
+    print("\nWaiting 20 seconds for rate limits to reset before final evaluation...")
+    time.sleep(20)  # Wait for 60 seconds
     print("Resuming evaluation...\n")
 
 # Then modify the final evaluation section to include the delay:

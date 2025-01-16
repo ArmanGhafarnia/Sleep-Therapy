@@ -477,8 +477,8 @@ if __name__ == "__main__":
 
 def wait_for_rate_limit_reset():
     """Wait for rate limits to reset before final evaluation"""
-    print("\nWaiting 60 seconds for rate limits to reset before final evaluation...")
-    time.sleep(60)  # Wait for 60 seconds
+    print("\nWaiting 20 seconds for rate limits to reset before final evaluation...")
+    time.sleep(20)  # Wait for 60 seconds
     print("Resuming evaluation...\n")
 
 # Then modify the final evaluation section to include the delay:
