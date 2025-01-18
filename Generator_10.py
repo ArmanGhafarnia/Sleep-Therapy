@@ -22,35 +22,45 @@ RESET = '\033[0m'
 BLUE = '\033[94m'
 
 # Patient profile for the patient LLM
-PATIENT_PROFILE = """You are a 45-year-old high school teacher in your final sleep therapy session.
+PATIENT_PROFILE = """You are a 42-year-old corporate attorney in your final sleep therapy session.
 
 Response rules:
-- Keep responses to 2-3 short paragraphs
-- Share one specific example when asked
+- Keep responses to 2-3 SHORT sentences only
+- Share only ONE specific example when asked
 - Focus on one main point at a time
-- Be direct and specific
-- No long explanations
+- Be direct and specific - no elaboration
+- Maximum of 50 words per response
+- Avoid multiple examples or explanations
+- DO NOT attempt to end the session or say goodbye until therapist initiates closure
+- Always engage with therapist's questions and provide substantive responses
+- Maintain active participation until therapist signals session end
 
 Progress made:
-- Sleep efficiency stable at 80%
-- Regular sleep schedule (11:30 PM - 6:00 AM)
-- Using relaxation techniques effectively
-- Optimized sleep environment
-- Managing racing thoughts better
-- Spouse's snoring controlled
-- Morning light exposure routine
+- Sleep efficiency improved to 89%
+- Sleep onset within 20 minutes most nights
+- Maintaining 11:00pm - 6:30am schedule
+- Successfully sleeping in shared bedroom
+- Regular morning coffee with spouse
+- Following buffer zone routine
+- Reduced sleep-related anxiety
 
 Current focus:
 - Maintaining improvements independently
-- Planning for stressful teaching periods
-- Preventing sleep anxiety relapse
-- Building sustainable habits
-- Weekend schedule consistency
+- Gradual weekend schedule flexibility
+- Preventing insomnia recurrence
+- Building confidence in sleep ability
+- Solidifying relaxation strategies
 
 Response format:
-- State the main point
-- Give one brief example
-- Share concrete plan"""
+- One clear main point (2 sentence)
+- One brief example if needed (2 sentence)
+- One concrete next step (2 sentence)
+
+Session engagement:
+- Continue discussing sleep-related topics until therapist initiates closure
+- Avoid polite goodbyes or session-ending statements
+- Stay focused on addressing therapeutic goals"""
+
 
 # Lazy initialization of evaluators to reduce initial delay
 class LazyEvaluator:
@@ -387,7 +397,7 @@ if __name__ == "__main__":
 
     # Initial setup
     # For the first interaction, pass an empty messages list since there's no conversation history yet
-    initial_patient_message = get_patient_response("Hello, Iam ready for fifth session", [])
+    initial_patient_message = get_patient_response("Hello, Iam ready for third session", [])
     print(f"\n{GREEN}Patient:{RESET}")
     for paragraph in initial_patient_message.split('\n'):
         print(textwrap.fill(paragraph, width=70))
@@ -427,40 +437,40 @@ if __name__ == "__main__":
                     print(f"{condition}: {status}")  # Print actual state value
                 else:
                     print(f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
-
-            if goal_stagnant_count[current_goal_index] >= MAX_STAGNANT_ROUNDS:
-                print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' skipped due to stagnation.{RESET}")
-                current_goal_index += 1
-                conditions["current_goal_achieved"] = False  # Keep as not achieved
-
-            else:  # Handle goal progress and system messages
-                if conditions["current_goal_achieved"]:
-                    print(f"{GREEN}Goal '{goal_names[current_goal_index]}' achieved.{RESET}")
-                    goal_progress[current_goal_index] = required_progress
+            if current_goal_index < len(goals):
+                if goal_stagnant_count[current_goal_index] >= MAX_STAGNANT_ROUNDS:
+                    print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' skipped due to stagnation.{RESET}")
                     current_goal_index += 1
+                    conditions["current_goal_achieved"] = False  # Keep as not achieved
 
-                    if current_goal_index >= len(goals):
-                        print(f"{GREEN}All goals achieved. The session is complete!{RESET}")
-                        conditions["all_goals_achieved"] = True
-                        print(f"\n{BLUE}Conditions:{RESET}")
-                        for condition, status in conditions.items():
-                            # Special handling for length_within_range which is now a string state
-                            if condition == "length_within_range":
-                                print(f"{condition}: {status}")  # Print actual state value
-                            else:
-                                print(
-                                    f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
+                else:  # Handle goal progress and system messages
+                    if conditions["current_goal_achieved"]:
+                        print(f"{GREEN}Goal '{goal_names[current_goal_index]}' achieved.{RESET}")
+                        goal_progress[current_goal_index] = required_progress
+                        current_goal_index += 1
+
+                        if current_goal_index >= len(goals):
+                            print(f"{GREEN}All goals achieved. The session is complete!{RESET}")
+                            conditions["all_goals_achieved"] = True
+                            print(f"\n{BLUE}Conditions:{RESET}")
+                            for condition, status in conditions.items():
+                                # Special handling for length_within_range which is now a string state
+                                if condition == "length_within_range":
+                                    print(f"{condition}: {status}")  # Print actual state value
+                                else:
+                                    print(
+                                        f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
+                        else:
+                            print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
+                            current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
+                            print(f"prompt : {current_goal_prompt}")
+                            messages.append({"role": "system", "content": current_goal_prompt})
                     else:
-                        print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
+                        print(
+                            f"{YELLOW}Goal '{goal_names[current_goal_index]}' not yet achieved. Progress: {goal_progress[current_goal_index]:.2f}/{required_progress}.{RESET}")
                         current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
                         print(f"prompt : {current_goal_prompt}")
                         messages.append({"role": "system", "content": current_goal_prompt})
-                else:
-                    print(
-                        f"{YELLOW}Goal '{goal_names[current_goal_index]}' not yet achieved. Progress: {goal_progress[current_goal_index]:.2f}/{required_progress}.{RESET}")
-                    current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
-                    print(f"prompt : {current_goal_prompt}")
-                    messages.append({"role": "system", "content": current_goal_prompt})
 
         if not conditions["adhered_to_topic"]:
             messages.append({"role": "system",
@@ -497,6 +507,7 @@ def wait_for_rate_limit_reset():
     print("\nWaiting 20 seconds for rate limits to reset before final evaluation...")
     time.sleep(20)  # Wait for 60 seconds
     print("Resuming evaluation...\n")
+
 
 # Then modify the final evaluation section to include the delay:
 print("\n" + "=" * 50)
