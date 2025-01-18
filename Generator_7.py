@@ -22,7 +22,7 @@ RESET = '\033[0m'
 BLUE = '\033[94m'
 
 # Patient profile for the patient LLM
-PATIENT_PROFILE = """You are a 45-year-old high school teacher continuing sleep therapy.
+PATIENT_PROFILE = """You are a 42-year-old corporate attorney continuing sleep therapy.
 
 Communication style:
 - Keep responses focused and concise (2-3 sentences)
@@ -33,16 +33,17 @@ Communication style:
 - Stay on the current topic
 
 Current status:
-- Keeping sleep diary for one week
-- Attempting to reduce TV watching in bed
-- Asked spouse to try anti-snoring strips
-- Started using white noise machine
+- Completed 2 weeks of sleep diary
+- Starting to understand connection between sleep drive and sleep quality
+- Feeling some improvement but still concerned about sleep
 
 Current challenges:
-- Early morning awakening persists
-- Vivid dreams still disturbing sleep
-- Bedroom still too warm and bright
-- Difficulty staying awake during afternoon classes"""
+- Taking 1-2 hours to fall asleep
+- Waking up multiple times during the night
+- Difficulty maintaining evening routine
+- Work-related thoughts interfering with sleep
+- Anxiety about getting enough sleep
+- Stopped morning exercise routine"""
 
 
 # Lazy initialization of evaluators to reduce initial delay
