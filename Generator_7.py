@@ -426,39 +426,40 @@ if __name__ == "__main__":
                 else:
                     print(f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
 
-            if goal_stagnant_count[current_goal_index] >= MAX_STAGNANT_ROUNDS:
-                print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' skipped due to stagnation.{RESET}")
-                current_goal_index += 1
-                conditions["current_goal_achieved"] = False  # Keep as not achieved
-
-            else:  # Handle goal progress and system messages
-                if conditions["current_goal_achieved"]:
-                    print(f"{GREEN}Goal '{goal_names[current_goal_index]}' achieved.{RESET}")
-                    goal_progress[current_goal_index] = required_progress
+            if current_goal_index < len(goals):
+                if goal_stagnant_count[current_goal_index] >= MAX_STAGNANT_ROUNDS:
+                    print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' skipped due to stagnation.{RESET}")
                     current_goal_index += 1
+                    conditions["current_goal_achieved"] = False  # Keep as not achieved
 
-                    if current_goal_index >= len(goals):
-                        print(f"{GREEN}All goals achieved. The session is complete!{RESET}")
-                        conditions["all_goals_achieved"] = True
-                        print(f"\n{BLUE}Conditions:{RESET}")
-                        for condition, status in conditions.items():
-                            # Special handling for length_within_range which is now a string state
-                            if condition == "length_within_range":
-                                print(f"{condition}: {status}")  # Print actual state value
-                            else:
-                                print(
-                                    f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
+                else:  # Handle goal progress and system messages
+                    if conditions["current_goal_achieved"]:
+                        print(f"{GREEN}Goal '{goal_names[current_goal_index]}' achieved.{RESET}")
+                        goal_progress[current_goal_index] = required_progress
+                        current_goal_index += 1
+
+                        if current_goal_index >= len(goals):
+                            print(f"{GREEN}All goals achieved. The session is complete!{RESET}")
+                            conditions["all_goals_achieved"] = True
+                            print(f"\n{BLUE}Conditions:{RESET}")
+                            for condition, status in conditions.items():
+                                # Special handling for length_within_range which is now a string state
+                                if condition == "length_within_range":
+                                    print(f"{condition}: {status}")  # Print actual state value
+                                else:
+                                    print(
+                                        f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
+                        else:
+                            print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
+                            current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
+                            print(f"prompt : {current_goal_prompt}")
+                            messages.append({"role": "system", "content": current_goal_prompt})
                     else:
-                        print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
+                        print(
+                            f"{YELLOW}Goal '{goal_names[current_goal_index]}' not yet achieved. Progress: {goal_progress[current_goal_index]:.2f}/{required_progress}.{RESET}")
                         current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
                         print(f"prompt : {current_goal_prompt}")
                         messages.append({"role": "system", "content": current_goal_prompt})
-                else:
-                    print(
-                        f"{YELLOW}Goal '{goal_names[current_goal_index]}' not yet achieved. Progress: {goal_progress[current_goal_index]:.2f}/{required_progress}.{RESET}")
-                    current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
-                    print(f"prompt : {current_goal_prompt}")
-                    messages.append({"role": "system", "content": current_goal_prompt})
 
         if not conditions["adhered_to_topic"]:
             messages.append({"role": "system",

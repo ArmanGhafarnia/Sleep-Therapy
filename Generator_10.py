@@ -56,10 +56,8 @@ Medical conditions:
 - Mild to moderate sleep apnea using CPAP
 - Features of depression improving with sleep
 
-Response format:
-- State the main point
-- Give one brief example
-- Share concrete plan"""
+answer so so long  at least 2 paragraph
+"""
 
 
 # Lazy initialization of evaluators to reduce initial delay
