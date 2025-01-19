@@ -9,6 +9,7 @@ from Goal_Accuracy import ConversationEvaluator
 from Length_Eval import length_checker
 from Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
 from Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
+from fasthtml.common import Svg, Path
 import time
 import asyncio
 
@@ -33,16 +34,33 @@ def ChatMessage(msg_idx, **kwargs):
     # Skip system messages
     if msg['role'] == 'system':
         return None
-    # Change to use Tailwind's built-in colors
-    # Change this line in the ChatMessage function:
-    bubble_class = "chat-bubble-accent" if msg['role'] == 'user' else 'chat-bubble-info'
-    chat_class = "chat-end" if msg['role'] == 'user' else 'chat-start'
-    return Div(Div(msg['role'], cls="chat-header"),
-               Div(msg['content'],
-                   id=f"chat-content-{msg_idx}",
-                   cls=f"chat-bubble {bubble_class}"),
-               id=f"chat-message-{msg_idx}",
-               cls=f"chat {chat_class}", **kwargs)
+    # Change bubble styling
+    bubble_class = "chat-bubble bg-blue-600 text-white" if msg[
+                                                               'role'] == 'user' else "chat-bubble bg-purple-600 text-white"
+    chat_class = "chat-end" if msg['role'] == 'user' else "chat-start"
+
+    # Add custom positioning classes for headers with vertical spacing
+    header_class = "chat-header mr-2 mb-1" if msg['role'] == 'user' else "chat-header ml-2 mb-1"
+
+    # Create message content
+    content_div = Div(
+        msg['content'] if msg['role'] == 'user' else '',  # Empty for assistant initially
+        id=f"chat-content-{msg_idx}",
+        cls=f"chat-bubble {bubble_class}",
+        data_content=msg['content'] if msg['role'] == 'assistant' else None,
+        data_streaming="true" if msg['role'] == 'assistant' else None,
+    )
+
+    # Map role to display name
+    display_name = "You" if msg['role'] == 'user' else "Therapist"
+
+    return Div(
+        Div(display_name, cls=header_class),  # Using custom header class with added vertical margin
+        content_div,
+        id=f"chat-message-{msg_idx}",
+        cls=f"chat {chat_class}",
+        **kwargs
+    )
 
 
 def ChatInput():
@@ -51,10 +69,15 @@ def ChatInput():
         name="msg",
         id="msg-input",
         placeholder="Type your message",
-        cls="input input-bordered w-full focus:shadow-none focus:outline-none",
+        cls="input input-bordered flex-grow focus:shadow-none focus:outline-none bg-blue-950 text-white border-blue-700 placeholder:text-blue-400",
         hx_swap_oob="true",
         onkeydown="if(event.key === 'Enter') setTimeout(() => { document.getElementById('msg-input').focus(); }, 10);",
     )
+
+
+
+
+
 
 
 @app.route("/")
@@ -66,30 +89,103 @@ def get():
         if msg["role"] != "system" and ChatMessage(msg_idx) is not None
     ]
 
+    # Define logo using proper FastHTML syntax
+    logo_svg = Svg(
+        Path(
+            d="M45.812 24.488a.75.75 0 0 0-1.06 0l-4.23 4.23V.75a.75.75 0 0 0-1.5 0v27.968l-4.23-4.23a.75.75 0 0 0-1.06 1.06l5.5 5.5a.75.75 0 0 0 1.06 0l5.5-5.5a.75.75 0 0 0 0-1.06z",
+            fill="currentColor"
+        ),
+        xmlns="http://www.w3.org/2000/svg",
+        viewBox="0 0 50 50",
+        cls="w-12 h-12 text-purple-400"
+    )
+
     page = Body(
-        H1("Sleep Therapy Chat"),
-        Div(*chat_messages, id="chatlist", cls="chat-box h-[73vh] overflow-y-auto"),
-        Form(
-            Group(ChatInput(), Button("Send", cls="btn btn-accent")),
-            ws_send=True,
-            hx_ext="ws",
-            ws_connect="/wscon",
-            cls="flex space-x-2 mt-2",
+        Div(
+            # Logo container on the left
+            Div(
+                Div(
+                    logo_svg,
+                    Div("Sleep Therapy", cls="text-xl font-bold text-purple-400 mt-2"),
+                    cls="flex flex-col items-center"
+                ),
+                cls="fixed left-8 top-8 z-10"
+            ),
+            # Main container with full width
+            Div(
+                # Chat container with original width
+                Div(
+                    Div(*chat_messages, id="chatlist", cls="chat-box h-[73vh] overflow-y-auto"),
+                    Form(
+                        Div(
+                            ChatInput(),
+                            Button("Send", cls="btn bg-purple-800 hover:bg-purple-600 text-white border-none"),
+                            cls="flex items-stretch space-x-2 mt-6"
+                        ),
+                        ws_send=True,
+                        hx_ext="ws",
+                        ws_connect="/wscon"
+                    ),
+                    cls="p-4 max-w-lg mx-auto w-full"  # Added w-full to maintain width
+                ),
+                cls="flex-1 flex justify-center"  # Center the chat container
+            ),
+            cls="min-h-screen w-full bg-gradient-to-br from-purple-900 via-blue-900 to-black flex"
         ),
         Script(
             """
-            // Auto-scroll the chat container to the bottom
-            const chatList = document.getElementById('chatlist');
-            if (chatList) {
-                const observer = new MutationObserver(() => {
+            // Auto-scroll and message streaming logic
+            function setupChat() {
+                const chatList = document.getElementById('chatlist');
+                if (!chatList) return;
+
+                const observer = new MutationObserver((mutations) => {
+                    // Auto-scroll
                     chatList.scrollTop = chatList.scrollHeight;
+
+                    // Find new messages that need streaming
+                    mutations.forEach(mutation => {
+                        mutation.addedNodes.forEach(node => {
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                const streamingElements = node.querySelectorAll('[data-streaming="true"]:not([data-processed])');
+                                streamingElements.forEach(element => {
+                                    const content = element.getAttribute('data-content');
+                                    if (!content) return;
+
+                                    element.setAttribute('data-processed', 'true');
+                                    let currentIndex = 0;
+
+                                    function showNextChunk() {
+                                        if (currentIndex < content.length) {
+                                            const chunk = content.slice(currentIndex, currentIndex + 3);
+                                            element.textContent += chunk;
+                                            currentIndex += 3;
+                                            chatList.scrollTop = chatList.scrollHeight;
+                                            setTimeout(showNextChunk, 50);
+                                        }
+                                    }
+
+                                    element.textContent = '';
+                                    showNextChunk();
+                                });
+                            }
+                        });
+                    });
                 });
-                observer.observe(chatList, { childList: true });
+
+                observer.observe(chatList, { 
+                    childList: true, 
+                    subtree: true 
+                });
             }
 
-            // Keep the cursor in the input box after a message is sent
+            // Initialize chat functionality
+            setupChat();
+
+            // Re-initialize when new content is loaded
             document.addEventListener('htmx:afterSwap', (event) => {
                 if (event.target.id === 'chatlist') {
+                    setupChat();
                     const inputBox = document.getElementById('msg-input');
                     if (inputBox) {
                         inputBox.focus();
@@ -98,9 +194,8 @@ def get():
             });
             """
         ),
-        cls="p-4 max-w-lg mx-auto",
     )
-    return Title("Sleep Therapy Chat"), page
+    return page
 
 
 
@@ -116,7 +211,7 @@ class LazyEvaluator:
         return self.instance
 
 
-async def chat_with_gpt(messages, model="gpt-4", max_retries=5):
+async def chat_with_gpt(messages, model="gpt-4o", max_retries=5):
     retry_count = 0
     while retry_count < max_retries:
         try:
