@@ -420,53 +420,66 @@ def initialize_evaluators_in_background(evaluators):
 # Initialize messages with system prompt
 messages = [
     {"role": "system",
-     "content": """You are a sleep therapy expert focusing on cognitive behavioral techniques for this fourth session.
+     "content": """You are a sleep therapy expert conducting the final consolidation session.
 
-Communication requirements:
+Response requirements:
 - Ask ONE clear question at a time
-- Focus on thoughts and beliefs about sleep
-- Keep responses to 3-4 sentences
-- Build on previous session progress
-- Address one cognitive pattern at a time
+- Keep responses to 2-3 sentences
+- Focus on maintenance strategies
+- Address specific challenges
+- Guide toward independence
 
-Session objectives:
-- Identify unhelpful thoughts about sleep
-- Challenge and modify sleep-related worries
-- Reduce bedtime mental arousal
-- Develop coping strategies for racing thoughts
+Session goals:
+- Review key improvements
+- Fine-tune strategies
+- Build self-management skills
+- Address remaining issues
+- Plan for long-term success
 
-Additional guidelines:
-- Direct and precise responses
-- Focus on cognitive aspects of sleep
-- Connect thoughts to sleep behavior
-- Remove redundant acknowledgments"""}
+Guidelines:
+- Direct and focused responses
+- No lengthy explanations
+- Practical, actionable advice
+- Work toward closure"""}
 ]
 
 goal_names = [
-    "Identifying Maladaptive Cognitions",
-    "Challenging and Modifying Cognitions",
-    "Reducing Psychological Arousal",
-    "Promoting Adherence to Behavioral Changes",
-    "Incorporate Behavioral Experiments to Test Beliefs and Behaviors",
-    "Develop Coping and Problem-Solving Skills for Sleep"
+    "Assessment of Treatment Readiness",
+    "Detailed Case Conceptualization",
+    "Case Conceptualization Form Simulation",
+    "Understanding Comorbidities",
+    "Therapeutic Component Selection",
+    "Flexibility in Treatment Application",
+    "Individual Tailoring",
+    "Anticipation of Adherence Challenges",
+    "Sequential Treatment Implementation",
+    "Evaluation of Treatment Effectiveness"
 ]
 
 goals = [
-    "The model should help patients identify thoughts and beliefs about sleep that are unhelpful or detrimental. This includes recognizing worries about sleep, like predicting sleep difficulty or fearing the consequences of poor sleep, which heighten psychological arousal and disrupt sleep.",
-    "The model should assist in evaluating and responding to these maladaptive cognitions constructively. Techniques like Socratic questioning, thought records, and cognitive restructuring are used to challenge the validity and utility of these beliefs.",
-    "The model should aid in reducing psychological arousal that occurs at bedtime or during awakenings at night, which is often linked to sleep-related cognitions. Strategies include cognitive restructuring and calming techniques.",
-    "Cognitive therapy should work in tandem with behavioral interventions in CBT-I (Cognitive Behavioral Therapy for Insomnia) to promote better adherence. For instance, addressing thoughts that hinder compliance with strategies like stimulus control (getting out of bed when not sleeping) and sleep restriction.",
-    "Behavioral experiments are a key component of cognitive therapy for insomnia, where patients test the validity of their beliefs or the utility of different behaviors in a controlled, experimental manner. This can involve, for example, deliberately altering sleep patterns to observe effects contrary to their dysfunctional beliefs.",
-    "The model should guide patients in developing skills to cope with and solve sleep-related problems independently, enhancing their resilience and ability to manage insomnia without therapist intervention."
+    "The therapy session should assess the patient’s readiness for change, determining their willingness to adopt new sleep behaviors. This is critical for effectively timing and implementing interventions.",
+    "Beyond the use of a form, the therapy should involve a detailed conceptualization that considers factors like life stressors, environmental influences, and personal habits that affect sleep.",
+    "The session should simulate the use of a case conceptualization form to systematically organize and guide the treatment process, considering sleep habits, comorbidities, and behavioral factors.",
+    "The model should demonstrate understanding of the impact of various comorbidities on insomnia and incorporate this knowledge into therapy suggestions.",
+    "The session should reflect thoughtful selection of CBT-I components that are most appropriate to the patient’s case, considering readiness for change, obstacles, and the patient’s sleep environment.",
+    "The therapy should adjust the standard CBT-I protocol to fit the patient’s specific situation, such as modifying techniques for comorbid conditions like anxiety or depression.",
+    "The treatment should be tailored to the individual patient’s symptoms and history, using patient-specific information to guide the conversation and interventions.",
+    "The model should anticipate potential adherence challenges, discussing strategies to overcome these barriers, motivating the patient, and setting realistic expectations.",
+    "It should effectively sequence treatment interventions, ensuring that each component builds on the previous one and corresponds to the patient’s evolving therapeutic needs.",
+    "The model should evaluate the effectiveness of implemented treatments, incorporating patient feedback and adjusting the plan as necessary to ensure optimal outcomes."
 ]
 
 goal_specific_prompts = {
-    "Identifying Maladaptive Cognitions": "Encourage the patient to articulate specific thoughts and beliefs about sleep that may be causing distress or hindering sleep quality. Ask them to reflect on how these thoughts manifest during both day and night. For example, prompt the patient to describe scenarios where worries about insufficient sleep lead to stress or altered behavior during the day. Explore how these cognitions contribute to a heightened state of psychological arousal at bedtime, impacting their ability to initiate and maintain sleep.",
-    "Challenging and Modifying Cognitions": "Facilitate a cognitive restructuring session by systematically addressing and challenging the patient’s negative beliefs about sleep. Utilize Socratic questioning to dissect the logic behind beliefs such as 'I can’t function without eight hours of sleep' or 'If I don’t sleep well tonight, I will fail tomorrow.' Introduce thought records as a tool for monitoring these beliefs and their consequences, guiding the patient through the process of identifying, challenging, and replacing these cognitions with more balanced and realistic thoughts.",
-    "Reducing Psychological Arousal": "Guide the patient in implementing relaxation techniques that can be practiced at bedtime to manage and reduce psychological arousal. These might include guided imagery, deep breathing exercises, or progressive muscle relaxation. Discuss the physiological and psychological processes involved in these techniques, emphasizing their role in mitigating the hyperarousal state often observed in insomnia. Encourage routine practice and discuss the patient's experiences and challenges with these techniques during subsequent sessions.",
-    "Promoting Adherence to Behavioral Changes": "Conduct a detailed exploration of the patient's experiences with behavioral treatment strategies for insomnia, such as stimulus control and sleep restriction. Address any cognitive barriers to adherence, such as beliefs about the necessity of staying in bed while awake. Use motivational interviewing to enhance motivation and commitment to these behavioral changes, focusing on resolving ambivalence and reinforcing the patient’s ability to implement these strategies effectively.",
-    "Incorporate Behavioral Experiments to Test Beliefs and Behaviors": "Design and implement behavioral experiments that challenge the patient’s maladaptive beliefs about sleep. For instance, if a patient believes that 'lying in bed longer helps me get more sleep,' suggest altering their time in bed to test this belief. Guide the patient in planning the experiment, predicting outcomes, and reviewing the actual results, thereby facilitating a practical understanding of how specific behaviors affect sleep.",
-    "Develop Coping and Problem-Solving Skills for Sleep": "Teach and develop specific problem-solving skills tailored to managing sleep-related issues. Focus on equipping the patient with strategies to address common nocturnal awakenings or prolonged sleep latency. Techniques could include deciding on activities to engage in out of bed that are conducive to sleepiness or methods to calm the mind when unable to sleep. Emphasize the development of a proactive stance towards these issues, rather than reactive distress."
+    "Assessment of Treatment Readiness": "Begin the session by discussing the patient's past experiences and current perceptions about sleep and treatment. Assess their willingness and readiness to engage in therapy by exploring their motivations, hesitations, and previous attempts at managing their sleep issues. Explain how their commitment and active participation are crucial for the success of the therapy. Provide clear examples of how behavioral changes can positively impact sleep and ask for their thoughts on making such changes.",
+    "Detailed Case Conceptualization": "Use a structured approach to delve into the patient's personal history, sleep patterns, lifestyle choices, and environmental factors that may be influencing their sleep. This should include a discussion of stress levels, work-life balance, bedtime routines, and any other relevant psychosocial factors. Guide the patient through a detailed mapping of these elements and their interconnections to build a comprehensive understanding of their sleep disturbances. This conceptualization helps in identifying specific targets for intervention.",
+    "Case Conceptualization Form Simulation": "Introduce and collaboratively fill out a case conceptualization form, explaining each section such as sleep habits, comorbidities, emotional stressors, and behavioral factors. Engage the patient in a step-by-step discussion, encouraging them to provide input and reflect on how each aspect of their life contributes to their sleep issues. This exercise aims to make the patient an active participant in their treatment planning, enhancing their understanding and ownership of the therapeutic process.",
+    "Understanding Comorbidities": "Discuss in detail the comorbidities that might be impacting the patient's insomnia, such as anxiety, depression, chronic pain, or other medical conditions. Explore how these comorbidities interact with their sleep problems and how treating insomnia might also help manage these conditions. Explain the bidirectional nature of sleep and health issues to help the patient see the holistic importance of sleep improvement.",
+    "Therapeutic Component Selection": "Present and discuss various components of Cognitive Behavioral Therapy for Insomnia (CBT-I), such as stimulus control, sleep restriction, and cognitive restructuring. Explain how each component works and its benefits, and use the patient’s specific sleep issues and preferences to decide together which components to prioritize in the treatment plan. This personalized selection process helps ensure that the therapy is tailored to the patient's unique needs.",
+    "Flexibility in Treatment Application": "Prepare to adapt therapy techniques based on ongoing assessments and the patient’s evolving needs. Discuss potential adjustments like modifying sleep schedules or introducing relaxation techniques, explaining why and how these changes might help. This approach emphasizes flexibility and responsiveness, which are key in managing complex or changing sleep issues.",
+    "Individual Tailoring": "Focus on tailoring the therapy to fit the patient’s specific circumstances, including their daily schedule, personal life stresses, and sleep environment. Discuss how personalized interventions, such as adjusting the bedroom environment or customizing sleep/wake times, can make therapy more effective. Encourage the patient to give feedback on what feels most relevant and manageable for them.",
+    "Anticipation of Adherence Challenges": "Proactively discuss potential challenges that might impede adherence to the treatment plan, such as inconsistent schedules, motivation dips, or external stressors. Explore strategies to overcome these barriers, such as setting reminders, engaging support from family members, or adjusting goals to be more achievable. This discussion helps prepare the patient to handle difficulties throughout the treatment process.",
+    "Sequential Treatment Implementation": "Outline the planned sequence of therapeutic interventions, explaining how each step builds on the previous one to progressively improve sleep. Discuss the rationale behind the sequence, such as starting with sleep hygiene improvements and gradually introducing more intensive interventions like sleep restriction therapy. This methodical approach helps the patient understand the progression and purpose of each phase of therapy.",
+    "Evaluation of Treatment Effectiveness": "Regularly evaluate the effectiveness of the treatment through discussions with the patient about their sleep diary, symptom changes, and overall satisfaction with the progress. Use this feedback to make informed adjustments to the treatment plan, ensuring that it remains aligned with the patient's needs and goals. This ongoing evaluation fosters a dynamic and responsive therapeutic environment."
 }
 
 
