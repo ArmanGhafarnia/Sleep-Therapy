@@ -109,8 +109,11 @@ def get():
                     Div("Sleep Therapy", cls="text-xl font-bold text-purple-400 mt-2"),
                     cls="flex flex-col items-center"
                 ),
-                cls="fixed left-8 top-8 z-10"
-            ),
+                cls="fixed top-64 left-44 flex flex-col items-start z-10"  # Increased top value
+            )
+
+            ,
+
             # Main container with full width
             Div(
                 # Chat container with original width
