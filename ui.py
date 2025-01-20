@@ -1,17 +1,16 @@
-from fasthtml.common import *
 import openai
 import textwrap
 import concurrent.futures
 import threading
-from typing import List
 from Aspect_Aritic_Aval_LLM import AspectCritic
 from Goal_Accuracy import ConversationEvaluator
 from Length_Eval import length_checker
 from Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
 from Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
-from fasthtml.common import Svg, Path
-import time
+from fasthtml.common import *
 import asyncio
+from fasthtml.common import Raw
+
 
 # Set up the app, including daisyui and tailwind for the chat component
 tlink = Script(src="https://cdn.tailwindcss.com"),
@@ -28,6 +27,48 @@ RESET = '\033[0m'
 BLUE = '\033[94m'
 
 
+def StarBackground():
+    star_elements = []
+    import random
+
+    for i in range(40):
+        x = random.randint(0, 2000)
+        y = random.randint(0, 1000)
+
+        delay = random.uniform(0, 3)
+        duration = random.uniform(3, 5)
+
+        # Changed star size to 4 units
+        star = f'''
+            <polygon 
+                points="0,-4 1,-1 4,0 1,1 0,4 -1,1 -4,0 -1,-1" 
+                class="star" 
+                transform="translate({x},{y})"
+            >
+                <animate 
+                    attributeName="opacity" 
+                    values="1;0;1" 
+                    dur="{duration}s" 
+                    begin="{delay}s" 
+                    repeatCount="indefinite" 
+                />
+            </polygon>
+        '''
+        star_elements.append(star)
+
+    return Raw(f'''
+        <div class="fixed inset-0 w-full h-full" style="z-index: 0; pointer-events: none;">
+            <svg width="100%" height="100%" viewBox="0 0 2000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                    .star {{
+                        fill: white;
+                        opacity: 0.7;
+                    }}
+                </style>
+                {"".join(star_elements)}
+            </svg>
+        </div>
+    ''')
 # Chat message component
 def ChatMessage(msg_idx, **kwargs):
     msg = messages[msg_idx]
@@ -75,50 +116,31 @@ def ChatInput():
     )
 
 
-
-
-
-
-
 @app.route("/")
 def get():
-    # Filter out system messages when displaying chat history
     chat_messages = [
         ChatMessage(msg_idx)
         for msg_idx, msg in enumerate(messages)
         if msg["role"] != "system" and ChatMessage(msg_idx) is not None
     ]
 
-    # Define logo using proper FastHTML syntax
-    logo_svg = Svg(
-        Path(
-            d="M45.812 24.488a.75.75 0 0 0-1.06 0l-4.23 4.23V.75a.75.75 0 0 0-1.5 0v27.968l-4.23-4.23a.75.75 0 0 0-1.06 1.06l5.5 5.5a.75.75 0 0 0 1.06 0l5.5-5.5a.75.75 0 0 0 0-1.06z",
-            fill="currentColor"
-        ),
-        xmlns="http://www.w3.org/2000/svg",
-        viewBox="0 0 50 50",
-        cls="w-12 h-12 text-purple-400"
-    )
-
     page = Body(
         Div(
-            # Logo container on the left
+            # Add the star background first
+            StarBackground(),
+
+            # Sleep Therapy text at top
+            Div(
+                Div("Sleep Therapy",
+                    cls="text-3xl font-bold text-purple-400 text-center"
+                    ),
+                cls="w-full fixed top-8 z-20"
+            ),
+
+            # Chat container
             Div(
                 Div(
-                    logo_svg,
-                    Div("Sleep Therapy", cls="text-xl font-bold text-purple-400 mt-2"),
-                    cls="flex flex-col items-center"
-                ),
-                cls="fixed top-64 left-44 flex flex-col items-start z-10"  # Increased top value
-            )
-
-            ,
-
-            # Main container with full width
-            Div(
-                # Chat container with original width
-                Div(
-                    Div(*chat_messages, id="chatlist", cls="chat-box h-[73vh] overflow-y-auto"),
+                    Div(*chat_messages, id="chatlist", cls="chat-box h-[73vh] overflow-y-auto mt-20"),
                     Form(
                         Div(
                             ChatInput(),
@@ -129,24 +151,20 @@ def get():
                         hx_ext="ws",
                         ws_connect="/wscon"
                     ),
-                    cls="p-4 max-w-lg mx-auto w-full"  # Added w-full to maintain width
+                    cls="p-4 max-w-lg mx-auto w-full"
                 ),
-                cls="flex-1 flex justify-center"  # Center the chat container
+                cls="flex-1 flex justify-center"
             ),
             cls="min-h-screen w-full bg-gradient-to-br from-purple-900 via-blue-900 to-black flex"
         ),
-        Script(
-            """
-            // Auto-scroll and message streaming logic
+        Script('''
             function setupChat() {
                 const chatList = document.getElementById('chatlist');
                 if (!chatList) return;
 
                 const observer = new MutationObserver((mutations) => {
-                    // Auto-scroll
                     chatList.scrollTop = chatList.scrollHeight;
 
-                    // Find new messages that need streaming
                     mutations.forEach(mutation => {
                         mutation.addedNodes.forEach(node => {
                             if (node.nodeType === Node.ELEMENT_NODE) {
@@ -176,16 +194,14 @@ def get():
                     });
                 });
 
-                observer.observe(chatList, { 
-                    childList: true, 
-                    subtree: true 
+                observer.observe(chatList, {
+                    childList: true,
+                    subtree: true
                 });
             }
 
-            // Initialize chat functionality
             setupChat();
 
-            // Re-initialize when new content is loaded
             document.addEventListener('htmx:afterSwap', (event) => {
                 if (event.target.id === 'chatlist') {
                     setupChat();
@@ -195,8 +211,7 @@ def get():
                     }
                 }
             });
-            """
-        ),
+        ''')
     )
     return page
 
@@ -405,50 +420,55 @@ def initialize_evaluators_in_background(evaluators):
 # Initialize messages with system prompt
 messages = [
     {"role": "system",
-     "content": "You are a sleep therapy expert tasked with helping patients overcome insomnia..."
-                " Today, your focus is on conducting an initial assessment using the Insomnia Intake Interview"
-                " to gather detailed information about the patient's sleep patterns and issues."
-                " Encourage the patient to maintain a Sleep Diary, and utilize the Insomnia Severity Index to"
-                " quantify the severity of their symptoms."
-                " ensuring you gather all necessary details without overwhelming the patient."
-                " Avoid speaking too much when it's unnecessary."
-                " Additional communication guidelines:"
-                " - Be direct and precise in your questions and responses"
-                " - Ask one clear question at a time"
-                " - Avoid unnecessary acknowledgments or wrap-up statements"
-                " - Skip phrases like 'feel free to reach out', 'take care', 'looking forward to'"
-                " - Focus only on relevant therapeutic content"
-                " - Remove redundant courtesies and pleasantries"}
+     "content": """You are a sleep therapy expert focusing on managing sleep-related arousal and anxiety in this third session.
+
+Communication requirements:
+- Ask ONE clear question at a time
+- Focus on most pressing current issue
+- Avoid repeating information 
+- If providing advice, limit to 2-3 key points
+- Build on previous session progress
+
+Session objectives:
+- Review success with previous techniques
+- Address arousal and anxiety management
+- Fine-tune sleep restriction timing
+- Enhance relaxation strategies
+
+Additional guidelines:
+- Direct and precise responses
+- Focus only on relevant therapeutic content
+- Remove redundant courtesies"""}
 ]
 
-# Define goals and prompts
 goal_names = [
-    "Gather Information",
-    "Assessing Circadian Tendencies and Factors",
-    "Utilization of the Sleep Diary",
-    "Evaluating Comorbidities",
-    "Open-Ended Questions",
-    "Assess Intake Interview",
-    "Identifies Unhealthy Sleep Practices",
-    "Treatment Goals Establishment",
+    "Managing High Arousal States",
+    "Sleep Hygiene Education",
+    "Providing Rationale for Interventions",
+    "Behavioral Strategies Adherence",
+    "Sleep Mechanisms Education",
+    "Assessing Strategy Effectiveness",
+    "Personalized Sleep Strategies"
 ]
 
 goals = [
-    "The model should effectively gather comprehensive information about the patient's current sleep issues, including difficulty falling or staying asleep, the frequency of sleep disruptions, and their impact on daily life and information about any past treatments and interventions the patient has tried, and their outcomes.",
-    "The model needs to accurately assess the patient's circadian rhythm influences on sleep problems, such as being a 'night owl' or 'morning person' and how these tendencies affect their sleep quality and timing.",
-    "The model should encourage the patient to maintain a sleep diary as a critical tool for collecting accurate data about their sleep patterns.",
-    "It is crucial that the model explores and identifies any psychiatric, medical, or other sleep disorders that coexist with the insomnia.",
-    "The model should ask open-ended questions that encourage the patient to describe their sleep problems in detail.",
-    "Assess the model's proficiency in conducting a thorough intake interview that covers key areas necessary for an accurate understanding and subsequent treatment of insomnia. This includes gathering detailed information on the patient's sleep patterns, lifestyle and environmental influences, psychological and emotional factors, and medical history.",
-    "The model identifies and discusses unhealthy sleep practices, such as poor sleep hygiene, the use of substances that disrupt sleep (like caffeine or alcohol close to bedtime), and other behaviors detrimental to sleep like excessive bedtime worry or screen time before sleep.",
-    "The model should be able to help the patient set realistic and achievable sleep improvement goals based on the assessment findings.",
+    "The model should effectively discuss techniques to manage high arousal states that are disruptive to sleep. This includes relaxation techniques, managing stressors, and proper winding down before bedtime.",
+    "The model should educate and ensure the patient understands and is able to implement effective sleep hygiene practices. This includes maintaining a consistent sleep schedule, optimizing the sleep environment (e.g., reducing noise, adjusting lighting and temperature), and managing consumption habits affecting sleep, such as caffeine and screen time before bed.",
+    "Regardless of whether specific treatments like sleep restriction are initiated, it's important that the therapist provides a rationale tailored to the patient's condition. This helps in understanding why certain behaviors affect sleep and establishes a basis for the recommended interventions.",
+    "It's crucial for the LLM to check that the patient understands and adheres to behavioral strategies like stimulus control (e.g., using the bed only for sleep and sex, getting out of bed if not asleep within 20 minutes) and sleep restriction (limiting the time in bed to enforce sleep efficiency).",
+    "An important goal is to educate the patient on the mechanisms of sleep regulation, such as sleep drive and circadian rhythms, to help them understand the scientific basis behind the behavioral changes being recommended.",
+    "Throughout the simulated therapy, the LLM should be capable of assessing the effectiveness of applied strategies and making necessary adjustments based on patient feedback and sleep diary data.",
+    "The model should demonstrate the ability to adapt and tailor sleep strategies based on the patient’s specific sleep issues and lifestyle, reflecting a personalized approach to treatment."
 ]
 
 goal_specific_prompts = {
-    "Gather Information": "Focus on gathering comprehensive information about the patient's current sleep issues...",
-    # Add full prompts here
-    "Assessing Circadian Tendencies and Factors": "Focus on assessing the patient's circadian rhythm tendencies...",
-    # Add rest of the prompts
+    "Managing High Arousal States": "Initiate a conversation about the variety of techniques available to manage high arousal states before bedtime. Explore and elaborate on relaxation strategies such as guided imagery, autogenic training, and meditation. Ask the patient to describe their current pre-sleep routine in detail, and then collaboratively discuss how they might integrate specific relaxation practices. Offer to guide them through a relaxation session or provide resources for home practice.",
+    "Sleep Hygiene Education": "Begin by explaining the concept of sleep hygiene and its critical role in improving sleep quality. Review each aspect of sleep hygiene with the patient, including sleep schedule regularity, the sleeping environment's suitability (quiet, dark, and cool), and pre-sleep activities that should be avoided such as significant caffeine or electronic device usage near bedtime. Ask the patient to keep a sleep hygiene diary for a week, noting down their routines, and use this as a basis for recommending personalized adjustments.",
+    "Providing Rationale for Interventions": "Educate the patient on the scientific reasoning behind each recommended sleep intervention. For instance, explain how sleep restriction helps to build a sleep debt that enhances sleep drive, or how stimulus control helps to associate the bed with sleepiness rather than wakefulness. Use diagrams or simple graphics if necessary to illustrate concepts like the sleep-wake cycle. Ensure the patient understands these rationales to increase their commitment to adhering to these techniques.",
+    "Behavioral Strategies Adherence": "Regularly evaluate the patient’s adherence to behavioral strategies such as maintaining a strict sleep-wake schedule and using the bed only for sleep and sex. Discuss any obstacles they encounter in following these routines, and offer practical solutions or adjustments. Emphasize the importance of persistence and consistency in experiencing the benefits, and consider setting short-term goals to build motivation.",
+    "Sleep Mechanisms Education": "Provide an in-depth explanation of the mechanisms that govern sleep including circadian rhythms and the sleep/wake homeostasis. Discuss how alterations in exposure to natural light, activity levels, and evening routines can impact these systems. Illustrate these points with examples from the patient’s own life, asking them to identify potential areas for adjustment that could lead to improved sleep.",
+    "Assessing Strategy Effectiveness": "Use each session to methodically review the patient’s progress and the effectiveness of the sleep strategies implemented. Have the patient share insights from their sleep diary, focusing on changes in sleep latency, nocturnal awakenings, and overall sleep quality. Adjust the treatment plan based on these observations and feedback, ensuring that it remains aligned with the patient's evolving sleep patterns and lifestyle changes.",
+    "Personalized Sleep Strategies": "Tailor every aspect of the intervention to the patient’s unique lifestyle, health status, and personal preferences. Discuss in detail their evening activities, their responsibilities that might impact sleep, and their sleep environment. Customize recommendations to fit seamlessly into their personal and professional life, allowing for flexibility and adjustments as needed. Engage them in a partnership where they feel empowered to suggest changes based on their experiences."
 }
 
 
