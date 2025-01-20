@@ -420,55 +420,53 @@ def initialize_evaluators_in_background(evaluators):
 # Initialize messages with system prompt
 messages = [
     {"role": "system",
-     "content": """You are a sleep therapy expert focusing on managing sleep-related arousal and anxiety in this third session.
+     "content": """You are a sleep therapy expert focusing on cognitive behavioral techniques for this fourth session.
 
 Communication requirements:
 - Ask ONE clear question at a time
-- Focus on most pressing current issue
-- Avoid repeating information 
-- If providing advice, limit to 2-3 key points
+- Focus on thoughts and beliefs about sleep
+- Keep responses to 3-4 sentences
 - Build on previous session progress
+- Address one cognitive pattern at a time
 
 Session objectives:
-- Review success with previous techniques
-- Address arousal and anxiety management
-- Fine-tune sleep restriction timing
-- Enhance relaxation strategies
+- Identify unhelpful thoughts about sleep
+- Challenge and modify sleep-related worries
+- Reduce bedtime mental arousal
+- Develop coping strategies for racing thoughts
 
 Additional guidelines:
 - Direct and precise responses
-- Focus only on relevant therapeutic content
-- Remove redundant courtesies"""}
+- Focus on cognitive aspects of sleep
+- Connect thoughts to sleep behavior
+- Remove redundant acknowledgments"""}
 ]
 
 goal_names = [
-    "Managing High Arousal States",
-    "Sleep Hygiene Education",
-    "Providing Rationale for Interventions",
-    "Behavioral Strategies Adherence",
-    "Sleep Mechanisms Education",
-    "Assessing Strategy Effectiveness",
-    "Personalized Sleep Strategies"
+    "Identifying Maladaptive Cognitions",
+    "Challenging and Modifying Cognitions",
+    "Reducing Psychological Arousal",
+    "Promoting Adherence to Behavioral Changes",
+    "Incorporate Behavioral Experiments to Test Beliefs and Behaviors",
+    "Develop Coping and Problem-Solving Skills for Sleep"
 ]
 
 goals = [
-    "The model should effectively discuss techniques to manage high arousal states that are disruptive to sleep. This includes relaxation techniques, managing stressors, and proper winding down before bedtime.",
-    "The model should educate and ensure the patient understands and is able to implement effective sleep hygiene practices. This includes maintaining a consistent sleep schedule, optimizing the sleep environment (e.g., reducing noise, adjusting lighting and temperature), and managing consumption habits affecting sleep, such as caffeine and screen time before bed.",
-    "Regardless of whether specific treatments like sleep restriction are initiated, it's important that the therapist provides a rationale tailored to the patient's condition. This helps in understanding why certain behaviors affect sleep and establishes a basis for the recommended interventions.",
-    "It's crucial for the LLM to check that the patient understands and adheres to behavioral strategies like stimulus control (e.g., using the bed only for sleep and sex, getting out of bed if not asleep within 20 minutes) and sleep restriction (limiting the time in bed to enforce sleep efficiency).",
-    "An important goal is to educate the patient on the mechanisms of sleep regulation, such as sleep drive and circadian rhythms, to help them understand the scientific basis behind the behavioral changes being recommended.",
-    "Throughout the simulated therapy, the LLM should be capable of assessing the effectiveness of applied strategies and making necessary adjustments based on patient feedback and sleep diary data.",
-    "The model should demonstrate the ability to adapt and tailor sleep strategies based on the patient’s specific sleep issues and lifestyle, reflecting a personalized approach to treatment."
+    "The model should help patients identify thoughts and beliefs about sleep that are unhelpful or detrimental. This includes recognizing worries about sleep, like predicting sleep difficulty or fearing the consequences of poor sleep, which heighten psychological arousal and disrupt sleep.",
+    "The model should assist in evaluating and responding to these maladaptive cognitions constructively. Techniques like Socratic questioning, thought records, and cognitive restructuring are used to challenge the validity and utility of these beliefs.",
+    "The model should aid in reducing psychological arousal that occurs at bedtime or during awakenings at night, which is often linked to sleep-related cognitions. Strategies include cognitive restructuring and calming techniques.",
+    "Cognitive therapy should work in tandem with behavioral interventions in CBT-I (Cognitive Behavioral Therapy for Insomnia) to promote better adherence. For instance, addressing thoughts that hinder compliance with strategies like stimulus control (getting out of bed when not sleeping) and sleep restriction.",
+    "Behavioral experiments are a key component of cognitive therapy for insomnia, where patients test the validity of their beliefs or the utility of different behaviors in a controlled, experimental manner. This can involve, for example, deliberately altering sleep patterns to observe effects contrary to their dysfunctional beliefs.",
+    "The model should guide patients in developing skills to cope with and solve sleep-related problems independently, enhancing their resilience and ability to manage insomnia without therapist intervention."
 ]
 
 goal_specific_prompts = {
-    "Managing High Arousal States": "Initiate a conversation about the variety of techniques available to manage high arousal states before bedtime. Explore and elaborate on relaxation strategies such as guided imagery, autogenic training, and meditation. Ask the patient to describe their current pre-sleep routine in detail, and then collaboratively discuss how they might integrate specific relaxation practices. Offer to guide them through a relaxation session or provide resources for home practice.",
-    "Sleep Hygiene Education": "Begin by explaining the concept of sleep hygiene and its critical role in improving sleep quality. Review each aspect of sleep hygiene with the patient, including sleep schedule regularity, the sleeping environment's suitability (quiet, dark, and cool), and pre-sleep activities that should be avoided such as significant caffeine or electronic device usage near bedtime. Ask the patient to keep a sleep hygiene diary for a week, noting down their routines, and use this as a basis for recommending personalized adjustments.",
-    "Providing Rationale for Interventions": "Educate the patient on the scientific reasoning behind each recommended sleep intervention. For instance, explain how sleep restriction helps to build a sleep debt that enhances sleep drive, or how stimulus control helps to associate the bed with sleepiness rather than wakefulness. Use diagrams or simple graphics if necessary to illustrate concepts like the sleep-wake cycle. Ensure the patient understands these rationales to increase their commitment to adhering to these techniques.",
-    "Behavioral Strategies Adherence": "Regularly evaluate the patient’s adherence to behavioral strategies such as maintaining a strict sleep-wake schedule and using the bed only for sleep and sex. Discuss any obstacles they encounter in following these routines, and offer practical solutions or adjustments. Emphasize the importance of persistence and consistency in experiencing the benefits, and consider setting short-term goals to build motivation.",
-    "Sleep Mechanisms Education": "Provide an in-depth explanation of the mechanisms that govern sleep including circadian rhythms and the sleep/wake homeostasis. Discuss how alterations in exposure to natural light, activity levels, and evening routines can impact these systems. Illustrate these points with examples from the patient’s own life, asking them to identify potential areas for adjustment that could lead to improved sleep.",
-    "Assessing Strategy Effectiveness": "Use each session to methodically review the patient’s progress and the effectiveness of the sleep strategies implemented. Have the patient share insights from their sleep diary, focusing on changes in sleep latency, nocturnal awakenings, and overall sleep quality. Adjust the treatment plan based on these observations and feedback, ensuring that it remains aligned with the patient's evolving sleep patterns and lifestyle changes.",
-    "Personalized Sleep Strategies": "Tailor every aspect of the intervention to the patient’s unique lifestyle, health status, and personal preferences. Discuss in detail their evening activities, their responsibilities that might impact sleep, and their sleep environment. Customize recommendations to fit seamlessly into their personal and professional life, allowing for flexibility and adjustments as needed. Engage them in a partnership where they feel empowered to suggest changes based on their experiences."
+    "Identifying Maladaptive Cognitions": "Encourage the patient to articulate specific thoughts and beliefs about sleep that may be causing distress or hindering sleep quality. Ask them to reflect on how these thoughts manifest during both day and night. For example, prompt the patient to describe scenarios where worries about insufficient sleep lead to stress or altered behavior during the day. Explore how these cognitions contribute to a heightened state of psychological arousal at bedtime, impacting their ability to initiate and maintain sleep.",
+    "Challenging and Modifying Cognitions": "Facilitate a cognitive restructuring session by systematically addressing and challenging the patient’s negative beliefs about sleep. Utilize Socratic questioning to dissect the logic behind beliefs such as 'I can’t function without eight hours of sleep' or 'If I don’t sleep well tonight, I will fail tomorrow.' Introduce thought records as a tool for monitoring these beliefs and their consequences, guiding the patient through the process of identifying, challenging, and replacing these cognitions with more balanced and realistic thoughts.",
+    "Reducing Psychological Arousal": "Guide the patient in implementing relaxation techniques that can be practiced at bedtime to manage and reduce psychological arousal. These might include guided imagery, deep breathing exercises, or progressive muscle relaxation. Discuss the physiological and psychological processes involved in these techniques, emphasizing their role in mitigating the hyperarousal state often observed in insomnia. Encourage routine practice and discuss the patient's experiences and challenges with these techniques during subsequent sessions.",
+    "Promoting Adherence to Behavioral Changes": "Conduct a detailed exploration of the patient's experiences with behavioral treatment strategies for insomnia, such as stimulus control and sleep restriction. Address any cognitive barriers to adherence, such as beliefs about the necessity of staying in bed while awake. Use motivational interviewing to enhance motivation and commitment to these behavioral changes, focusing on resolving ambivalence and reinforcing the patient’s ability to implement these strategies effectively.",
+    "Incorporate Behavioral Experiments to Test Beliefs and Behaviors": "Design and implement behavioral experiments that challenge the patient’s maladaptive beliefs about sleep. For instance, if a patient believes that 'lying in bed longer helps me get more sleep,' suggest altering their time in bed to test this belief. Guide the patient in planning the experiment, predicting outcomes, and reviewing the actual results, thereby facilitating a practical understanding of how specific behaviors affect sleep.",
+    "Develop Coping and Problem-Solving Skills for Sleep": "Teach and develop specific problem-solving skills tailored to managing sleep-related issues. Focus on equipping the patient with strategies to address common nocturnal awakenings or prolonged sleep latency. Techniques could include deciding on activities to engage in out of bed that are conducive to sleepiness or methods to calm the mind when unable to sleep. Emphasize the development of a proactive stance towards these issues, rather than reactive distress."
 }
 
 
