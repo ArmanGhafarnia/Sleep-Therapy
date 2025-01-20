@@ -11,7 +11,10 @@ from Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
 from Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
 from fasthtml.common import Svg, Path
 import time
+from fasthtml.common import *
 import asyncio
+from fasthtml.common import Raw
+
 
 # Set up the app, including daisyui and tailwind for the chat component
 tlink = Script(src="https://cdn.tailwindcss.com"),
@@ -28,6 +31,48 @@ RESET = '\033[0m'
 BLUE = '\033[94m'
 
 
+def StarBackground():
+    star_elements = []
+    import random
+
+    for i in range(40):
+        x = random.randint(0, 2000)
+        y = random.randint(0, 1000)
+
+        delay = random.uniform(0, 3)
+        duration = random.uniform(3, 5)
+
+        # Changed star size to 4 units
+        star = f'''
+            <polygon 
+                points="0,-4 1,-1 4,0 1,1 0,4 -1,1 -4,0 -1,-1" 
+                class="star" 
+                transform="translate({x},{y})"
+            >
+                <animate 
+                    attributeName="opacity" 
+                    values="1;0;1" 
+                    dur="{duration}s" 
+                    begin="{delay}s" 
+                    repeatCount="indefinite" 
+                />
+            </polygon>
+        '''
+        star_elements.append(star)
+
+    return Raw(f'''
+        <div class="fixed inset-0 w-full h-full" style="z-index: 0; pointer-events: none;">
+            <svg width="100%" height="100%" viewBox="0 0 2000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                    .star {{
+                        fill: white;
+                        opacity: 0.7;
+                    }}
+                </style>
+                {"".join(star_elements)}
+            </svg>
+        </div>
+    ''')
 # Chat message component
 def ChatMessage(msg_idx, **kwargs):
     msg = messages[msg_idx]
@@ -75,50 +120,31 @@ def ChatInput():
     )
 
 
-
-
-
-
-
 @app.route("/")
 def get():
-    # Filter out system messages when displaying chat history
     chat_messages = [
         ChatMessage(msg_idx)
         for msg_idx, msg in enumerate(messages)
         if msg["role"] != "system" and ChatMessage(msg_idx) is not None
     ]
 
-    # Define logo using proper FastHTML syntax
-    logo_svg = Svg(
-        Path(
-            d="M45.812 24.488a.75.75 0 0 0-1.06 0l-4.23 4.23V.75a.75.75 0 0 0-1.5 0v27.968l-4.23-4.23a.75.75 0 0 0-1.06 1.06l5.5 5.5a.75.75 0 0 0 1.06 0l5.5-5.5a.75.75 0 0 0 0-1.06z",
-            fill="currentColor"
-        ),
-        xmlns="http://www.w3.org/2000/svg",
-        viewBox="0 0 50 50",
-        cls="w-12 h-12 text-purple-400"
-    )
-
     page = Body(
         Div(
-            # Logo container on the left
+            # Add the star background first
+            StarBackground(),
+
+            # Sleep Therapy text at top
+            Div(
+                Div("Sleep Therapy",
+                    cls="text-3xl font-bold text-purple-400 text-center"
+                    ),
+                cls="w-full fixed top-8 z-20"
+            ),
+
+            # Chat container
             Div(
                 Div(
-                    logo_svg,
-                    Div("Sleep Therapy", cls="text-xl font-bold text-purple-400 mt-2"),
-                    cls="flex flex-col items-center"
-                ),
-                cls="fixed top-64 left-44 flex flex-col items-start z-10"  # Increased top value
-            )
-
-            ,
-
-            # Main container with full width
-            Div(
-                # Chat container with original width
-                Div(
-                    Div(*chat_messages, id="chatlist", cls="chat-box h-[73vh] overflow-y-auto"),
+                    Div(*chat_messages, id="chatlist", cls="chat-box h-[73vh] overflow-y-auto mt-20"),
                     Form(
                         Div(
                             ChatInput(),
@@ -129,24 +155,20 @@ def get():
                         hx_ext="ws",
                         ws_connect="/wscon"
                     ),
-                    cls="p-4 max-w-lg mx-auto w-full"  # Added w-full to maintain width
+                    cls="p-4 max-w-lg mx-auto w-full"
                 ),
-                cls="flex-1 flex justify-center"  # Center the chat container
+                cls="flex-1 flex justify-center"
             ),
             cls="min-h-screen w-full bg-gradient-to-br from-purple-900 via-blue-900 to-black flex"
         ),
-        Script(
-            """
-            // Auto-scroll and message streaming logic
+        Script('''
             function setupChat() {
                 const chatList = document.getElementById('chatlist');
                 if (!chatList) return;
 
                 const observer = new MutationObserver((mutations) => {
-                    // Auto-scroll
                     chatList.scrollTop = chatList.scrollHeight;
 
-                    // Find new messages that need streaming
                     mutations.forEach(mutation => {
                         mutation.addedNodes.forEach(node => {
                             if (node.nodeType === Node.ELEMENT_NODE) {
@@ -176,16 +198,14 @@ def get():
                     });
                 });
 
-                observer.observe(chatList, { 
-                    childList: true, 
-                    subtree: true 
+                observer.observe(chatList, {
+                    childList: true,
+                    subtree: true
                 });
             }
 
-            // Initialize chat functionality
             setupChat();
 
-            // Re-initialize when new content is loaded
             document.addEventListener('htmx:afterSwap', (event) => {
                 if (event.target.id === 'chatlist') {
                     setupChat();
@@ -195,8 +215,7 @@ def get():
                     }
                 }
             });
-            """
-        ),
+        ''')
     )
     return page
 
