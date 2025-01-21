@@ -112,7 +112,17 @@ def ChatInput():
         placeholder="Type your message",
         cls="input input-bordered flex-grow focus:shadow-none focus:outline-none bg-blue-950 text-white border-blue-700 placeholder:text-blue-400",
         hx_swap_oob="true",
-        onkeydown="if(event.key === 'Enter') setTimeout(() => { document.getElementById('msg-input').focus(); }, 10);",
+        # Add event handler to reset cursor position and clear input after sending
+        onkeydown="""
+            if(event.key === 'Enter') {
+                setTimeout(() => {
+                    const input = document.getElementById('msg-input');
+                    input.value = '';  // Clear the input
+                    input.focus();     // Focus the input
+                    input.setSelectionRange(0, 0);  // Set cursor to start
+                }, 10);
+            }
+        """,
     )
 
 
@@ -158,60 +168,72 @@ def get():
             cls="min-h-screen w-full bg-gradient-to-br from-purple-900 via-blue-900 to-black flex"
         ),
         Script('''
-            function setupChat() {
-                const chatList = document.getElementById('chatlist');
-                if (!chatList) return;
+                    function setupChat() {
+                        const chatList = document.getElementById('chatlist');
+                        if (!chatList) return;
 
-                const observer = new MutationObserver((mutations) => {
-                    chatList.scrollTop = chatList.scrollHeight;
-
-                    mutations.forEach(mutation => {
-                        mutation.addedNodes.forEach(node => {
-                            if (node.nodeType === Node.ELEMENT_NODE) {
-                                const streamingElements = node.querySelectorAll('[data-streaming="true"]:not([data-processed])');
-                                streamingElements.forEach(element => {
-                                    const content = element.getAttribute('data-content');
-                                    if (!content) return;
-
-                                    element.setAttribute('data-processed', 'true');
-                                    let currentIndex = 0;
-
-                                    function showNextChunk() {
-                                        if (currentIndex < content.length) {
-                                            const chunk = content.slice(currentIndex, currentIndex + 3);
-                                            element.textContent += chunk;
-                                            currentIndex += 3;
-                                            chatList.scrollTop = chatList.scrollHeight;
-                                            setTimeout(showNextChunk, 50);
-                                        }
-                                    }
-
-                                    element.textContent = '';
-                                    showNextChunk();
-                                });
+                        // Add function to reset input state
+                        function resetInput() {
+                            const input = document.getElementById('msg-input');
+                            if (input) {
+                                input.value = '';
+                                input.focus();
+                                input.setSelectionRange(0, 0);
                             }
+                        }
+
+                        const observer = new MutationObserver((mutations) => {
+                            chatList.scrollTop = chatList.scrollHeight;
+                            resetInput();  // Reset input after any chat updates
+
+                            mutations.forEach(mutation => {
+                                mutation.addedNodes.forEach(node => {
+                                    if (node.nodeType === Node.ELEMENT_NODE) {
+                                        const streamingElements = node.querySelectorAll('[data-streaming="true"]:not([data-processed])');
+                                        streamingElements.forEach(element => {
+                                            const content = element.getAttribute('data-content');
+                                            if (!content) return;
+
+                                            element.setAttribute('data-processed', 'true');
+                                            let currentIndex = 0;
+
+                                            function showNextChunk() {
+                                                if (currentIndex < content.length) {
+                                                    const chunk = content.slice(currentIndex, currentIndex + 3);
+                                                    element.textContent += chunk;
+                                                    currentIndex += 3;
+                                                    chatList.scrollTop = chatList.scrollHeight;
+                                                    setTimeout(showNextChunk, 50);
+                                                }
+                                            }
+
+                                            element.textContent = '';
+                                            showNextChunk();
+                                        });
+                                    }
+                                });
+                            });
                         });
-                    });
-                });
 
-                observer.observe(chatList, {
-                    childList: true,
-                    subtree: true
-                });
-            }
-
-            setupChat();
-
-            document.addEventListener('htmx:afterSwap', (event) => {
-                if (event.target.id === 'chatlist') {
-                    setupChat();
-                    const inputBox = document.getElementById('msg-input');
-                    if (inputBox) {
-                        inputBox.focus();
+                        observer.observe(chatList, {
+                            childList: true,
+                            subtree: true
+                        });
                     }
-                }
-            });
-        ''')
+
+                    setupChat();
+
+                    document.addEventListener('htmx:afterSwap', (event) => {
+                        if (event.target.id === 'chatlist') {
+                            setupChat();
+                            const inputBox = document.getElementById('msg-input');
+                            if (inputBox) {
+                                inputBox.focus();
+                                inputBox.setSelectionRange(0, 0);  // Ensure cursor is at start
+                            }
+                        }
+                    });
+                ''')
     )
     return page
 
