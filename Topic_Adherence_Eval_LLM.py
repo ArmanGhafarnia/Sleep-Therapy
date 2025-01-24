@@ -5,7 +5,7 @@ import time
 from typing import List, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = ""
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
