@@ -3,7 +3,7 @@ import concurrent.futures
 import time
 from typing import List, Tuple
 
-openai.api_key = ""
+openai.api_key = "your-api-key-here"
 
 
 def _make_api_call_with_retry(messages, model="gpt-4o", max_retries=3):

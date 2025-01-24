@@ -3,7 +3,7 @@ import concurrent.futures
 from typing import List
 import time
 
-openai.api_key = ""
+openai.api_key = "your-api-key-here"
 
 
 class AspectCritic:

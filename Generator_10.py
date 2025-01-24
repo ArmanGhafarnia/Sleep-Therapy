@@ -10,7 +10,7 @@ from Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
 from Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
 import time
 
-openai.api_key = ""
+openai.api_key = "your-api-key-here"
 
 GREEN = '\033[92m'
 YELLOW = '\033[93m'

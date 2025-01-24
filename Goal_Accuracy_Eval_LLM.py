@@ -10,7 +10,7 @@ class ConversationEvaluator:
         self.model = model
         self.MAX_RETRIES = 3
         self.BASE_DELAY = 0.1
-        openai.api_key = ""
+        openai.api_key = "your-api-key-here"
 
     def _make_api_call_with_retry(self, messages, max_tokens=10, temperature=0.0):
         for attempt in range(self.MAX_RETRIES):
