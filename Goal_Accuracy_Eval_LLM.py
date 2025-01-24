@@ -32,7 +32,7 @@ class ConversationEvaluator:
                             wait_time = float(str(e).split('in ')[1].split('ms')[0]) / 1000
                         except:
                             pass
-                    time.sleep(wait_time + 0.05)  # Add small buffer
+                    time.sleep(wait_time + 0.05)
                     continue
                 raise
             except Exception as e:
@@ -107,7 +107,7 @@ class ConversationEvaluator:
                     "Description": goal,
                     "Achieved": achievement_score
                 }
-                time.sleep(0.1)  # Small delay between goals
+                time.sleep(0.1)
             except Exception as e:
                 print(f"Error evaluating goal {goal_name}: {str(e)}")
                 evaluation_results[goal_name] = {

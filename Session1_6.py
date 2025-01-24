@@ -12,21 +12,17 @@ import asyncio
 from fasthtml.common import Raw
 
 
-# Set up the app, including daisyui and tailwind for the chat component
+
 tlink = Script(src="https://cdn.tailwindcss.com"),
 dlink = Link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css")
 app = FastHTML(hdrs=(tlink, dlink, picolink), exts='ws')
 
-# Initialize your API key
 openai.api_key = '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'
 
-# Define color codes
 GREEN = '\033[92m'
 YELLOW = '\033[93m'
 RESET = '\033[0m'
 BLUE = '\033[94m'
-
-
 
 def StarBackground():
     star_elements = []
@@ -39,7 +35,6 @@ def StarBackground():
         delay = random.uniform(0, 3)
         duration = random.uniform(3, 5)
 
-        # Changed star size to 4 units
         star = f'''
             <polygon 
                 points="0,-4 1,-1 4,0 1,1 0,4 -1,1 -4,0 -1,-1" 
@@ -70,34 +65,29 @@ def StarBackground():
             </svg>
         </div>
     ''')
-# Chat message component
+
 def ChatMessage(msg_idx, **kwargs):
     msg = messages[msg_idx]
-    # Skip system messages
     if msg['role'] == 'system':
         return None
-    # Change bubble styling
     bubble_class = "chat-bubble bg-blue-600 text-white" if msg[
                                                                'role'] == 'user' else "chat-bubble bg-purple-600 text-white"
     chat_class = "chat-end" if msg['role'] == 'user' else "chat-start"
 
-    # Add custom positioning classes for headers with vertical spacing
     header_class = "chat-header mr-2 mb-1" if msg['role'] == 'user' else "chat-header ml-2 mb-1"
 
-    # Create message content
     content_div = Div(
-        msg['content'] if msg['role'] == 'user' else '',  # Empty for assistant initially
+        msg['content'] if msg['role'] == 'user' else '',
         id=f"chat-content-{msg_idx}",
         cls=f"chat-bubble {bubble_class}",
         data_content=msg['content'] if msg['role'] == 'assistant' else None,
         data_streaming="true" if msg['role'] == 'assistant' else None,
     )
 
-    # Map role to display name
     display_name = "You" if msg['role'] == 'user' else "Therapist"
 
     return Div(
-        Div(display_name, cls=header_class),  # Using custom header class with added vertical margin
+        Div(display_name, cls=header_class),
         content_div,
         id=f"chat-message-{msg_idx}",
         cls=f"chat {chat_class}",
@@ -113,7 +103,6 @@ def ChatInput():
         placeholder="Type your message",
         cls="input input-bordered flex-grow focus:shadow-none focus:outline-none bg-blue-950 text-white border-blue-700 placeholder:text-blue-400",
         hx_swap_oob="true",
-        # Add event handler to reset cursor position and clear input after sending
         onkeydown="""
             if(event.key === 'Enter') {
                 setTimeout(() => {
@@ -137,18 +126,13 @@ def get():
 
     page = Body(
         Div(
-            # Add the star background first
             StarBackground(),
-
-            # Sleep Therapy text at top
             Div(
                 Div("Sleep Therapy",
                     cls="text-3xl font-bold text-purple-400 text-center"
                     ),
                 cls="w-full fixed top-8 z-20"
             ),
-
-            # Chat container
             Div(
                 Div(
                     Div(*chat_messages, id="chatlist", cls="chat-box h-[73vh] overflow-y-auto mt-20"),
@@ -239,8 +223,6 @@ def get():
     return page
 
 
-
-# Lazy initialization of evaluators
 class LazyEvaluator:
     def __init__(self, initializer):
         self.initializer = initializer
@@ -278,9 +260,7 @@ async def chat_with_gpt(messages, model="gpt-4o", max_retries=5):
             return f"Error: {e}"
 
 
-# Cache to store evaluation results
 last_evaluated_index = -1
-
 
 def format_conversation_for_evaluator(conversation_history):
     formatted_conversation = []
@@ -320,7 +300,6 @@ def format_last_conversation_tuple(conversation_history):
     return []
 
 
-# Goal progress tracking
 goal_progress = {}
 required_progress = 1.00
 goal_stagnant_count = {}
@@ -440,7 +419,6 @@ def initialize_evaluators_in_background(evaluators):
     threading.Thread(target=background_init, daemon=True).start()
 
 
-# Initialize messages with system prompt
 messages = [
     {"role": "system",
      "content": "You are a sleep therapy expert tasked with helping patients overcome insomnia..."
@@ -459,7 +437,6 @@ messages = [
                 " - Remove redundant courtesies and pleasantries"}
 ]
 
-# Define goals and prompts
 goal_names = [
     "Gather Information",
     "Assessing Circadian Tendencies and Factors",
@@ -519,7 +496,6 @@ evaluators = {
     "topic_adherence": LazyEvaluator(lambda: TopicAdherenceEvaluator())
 }
 
-# Initialize evaluators and goal progress
 initialize_evaluators_in_background(evaluators)
 initialize_goal_progress(len(goals))
 current_goal_index = 0
@@ -529,27 +505,21 @@ current_goal_index = 0
 async def ws(msg: str, send):
     global current_goal_index, messages
 
-    # Process user input
     messages.append({"role": "user", "content": msg.rstrip()})
     swap = 'beforeend'
 
-    # Display user message in both console and UI
     print(f"\n{GREEN}You:{RESET} {msg}")
     await send(Div(ChatMessage(len(messages) - 1), hx_swap_oob=swap, id="chatlist"))
-    await send(ChatInput())  # Clear input field
+    await send(ChatInput())
 
-    # Get therapist response
     therapist_message = await chat_with_gpt(messages)
 
-    # Display therapist message in both console and UI
     print(f"\n{YELLOW}Therapist:{RESET}")
     for paragraph in therapist_message.split('\n'):
         print(textwrap.fill(paragraph, width=70))
 
     messages.append({"role": "assistant", "content": therapist_message})
     await send(Div(ChatMessage(len(messages) - 1), hx_swap_oob=swap, id="chatlist"))
-
-    # Evaluate conditions
     conditions = evaluate_conditions_incrementally(messages, {k: v() for k, v in evaluators.items()},
                                                    last_evaluated_index, current_goal_index)
 

@@ -2,9 +2,7 @@ import openai
 import concurrent.futures
 from typing import List
 import time
-import math
 
-# Set OpenAI API key
 openai.api_key = "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"
 
 
@@ -13,14 +11,13 @@ class AspectCritic:
         self.aspects = aspects
         self.model = model
         self.MAX_RETRIES = 3
-        self.BATCH_SIZE = 3  # Process aspects in smaller batches
-        self.DELAY_BETWEEN_BATCHES = 0.2  # 200ms delay between batches
+        self.BATCH_SIZE = 3
+        self.DELAY_BETWEEN_BATCHES = 0.2
 
     def evaluate_conversation(self, conversation: List[tuple]):
         responses = [response for _, response in conversation]
         responses_text = "\n".join([f"Response: {response}" for response in responses])
 
-        # Split aspects into batches
         aspect_batches = [
             self.aspects[i:i + self.BATCH_SIZE]
             for i in range(0, len(self.aspects), self.BATCH_SIZE)
@@ -31,7 +28,7 @@ class AspectCritic:
         for batch in aspect_batches:
             batch_results = self._process_aspect_batch(responses_text, batch)
             all_results.update(batch_results)
-            time.sleep(self.DELAY_BETWEEN_BATCHES)  # Delay between batches
+            time.sleep(self.DELAY_BETWEEN_BATCHES)
 
         return all_results
 
@@ -50,7 +47,7 @@ class AspectCritic:
                     batch_results[aspect_name] = result
                 except Exception as e:
                     print(f"Failed to evaluate aspect {aspect_name}: {str(e)}")
-                    batch_results[aspect_name] = False  # Default to False on failure
+                    batch_results[aspect_name] = False
 
         return batch_results
 
@@ -60,8 +57,7 @@ class AspectCritic:
                 return self._evaluate_aspect(responses_text, aspect)
             except openai.error.RateLimitError as e:
                 if attempt < self.MAX_RETRIES - 1:
-                    # Extract wait time from error message if available
-                    wait_time = 0.1  # Default 100ms
+                    wait_time = 0.1
                     if hasattr(e, 'headers') and 'retry-after' in e.headers:
                         wait_time = float(e.headers['retry-after'])
                     elif 'Please try again in' in str(e):
@@ -70,7 +66,6 @@ class AspectCritic:
                         except:
                             pass
 
-                    # Add a small buffer to the wait time
                     wait_time = wait_time + 0.05
                     time.sleep(wait_time)
                     continue

@@ -10,18 +10,13 @@ from Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
 from Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
 import time
 
-
-
-# Initialize your API key
 openai.api_key = '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'
 
-# Define color codes
 GREEN = '\033[92m'
 YELLOW = '\033[93m'
 RESET = '\033[0m'
 BLUE = '\033[94m'
 
-# Patient profile for the patient LLM
 PATIENT_PROFILE = """You are a 60-year-old accountant in your final sleep therapy session.
 
 Response rules:
@@ -60,7 +55,6 @@ answer so so long  at least 2 paragraph
 """
 
 
-# Lazy initialization of evaluators to reduce initial delay
 class LazyEvaluator:
     def __init__(self, initializer):
         self.initializer = initializer
@@ -72,13 +66,7 @@ class LazyEvaluator:
         return self.instance
 
 
-
-
 def chat_with_gpt(messages, model="gpt-4o", max_retries=5):
-    """
-    Send a chat request to GPT with simple rate limit handling.
-    Waits 30 seconds when rate limit is hit.
-    """
     retry_count = 0
     while retry_count < max_retries:
         try:
@@ -97,7 +85,7 @@ def chat_with_gpt(messages, model="gpt-4o", max_retries=5):
                 return f"Error: Maximum retries exceeded. Last error: {e}"
 
             print(f"\nRate limit reached. Waiting 30 seconds before retry {retry_count}/{max_retries}...")
-            time.sleep(30)  # Fixed 30-second wait
+            time.sleep(30)
             continue
 
         except Exception as e:
@@ -105,31 +93,24 @@ def chat_with_gpt(messages, model="gpt-4o", max_retries=5):
 
 
 def get_patient_response(therapist_message, conversation_history):
-    # Start with the patient profile
     messages = [
         {"role": "system", "content": PATIENT_PROFILE}
     ]
 
-    # Add only the actual conversation exchanges, filtering out system prompts
     for msg in conversation_history:
-        # Skip system messages (therapist prompts)
         if msg['role'] == 'system':
             continue
 
         if msg['role'] == 'user':
-            # Previous patient messages become 'assistant' messages for patient LLM
             messages.append({"role": "assistant", "content": msg['content']})
         elif msg['role'] == 'assistant':
-            # Previous therapist messages become 'user' messages for patient LLM
             messages.append({"role": "user", "content": msg['content']})
 
-    # Add the current therapist message
     messages.append({"role": "user", "content": therapist_message})
 
     return chat_with_gpt(messages)
 
 
-# Cache to store evaluation results for previously processed messages
 last_evaluated_index = -1
 
 
@@ -138,7 +119,7 @@ def format_conversation_for_evaluator(conversation_history):
     current_pair = {}
 
     for message in conversation_history:
-        if message['role'] == 'system':  # Skip system prompts
+        if message['role'] == 'system':
             continue
         if message['role'] == 'user':
             current_pair['user'] = message['content']
@@ -154,7 +135,6 @@ def format_last_conversation_tuple(conversation_history):
     if len(conversation_history) < 2:
         return []
 
-    # Find last patient-therapist pair, skipping system messages
     user_msg = None
     asst_msg = None
 
@@ -172,11 +152,10 @@ def format_last_conversation_tuple(conversation_history):
     return []
 
 
-# Goal progress tracking
 goal_progress = {}
 required_progress = 1.00
 goal_stagnant_count = {}
-MAX_STAGNANT_ROUNDS = 6  # Skip goal after 6 rounds of no progress
+MAX_STAGNANT_ROUNDS = 6
 
 
 def initialize_goal_progress(num_goals):
@@ -187,13 +166,12 @@ def initialize_goal_progress(num_goals):
 
 def evaluate_conditions_incrementally(conversation_history: List[dict], evaluators: dict, last_index: int,
                                       current_goal_index):
-    """Run incremental evaluations only on the new parts of the conversation."""
     global last_evaluated_index, goal_progress, required_progress
     conditions = {
         "aspect_critics": False,
         "current_goal_achieved": False,
         "all_goals_achieved": False,
-        "length_within_range": "too_short",  # Default state for length
+        "length_within_range": "too_short",
         "stayed_on_track": False,
         "adhered_to_topic": False
     }
@@ -219,7 +197,6 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
 
         current_progress = goal_evaluator.check_goal_achieved(goal_description, formatted_conversation)
 
-        # Only update progress if current progress is higher
         if current_progress > goal_progress[current_goal_index]:
             goal_progress[current_goal_index] = current_progress
             goal_stagnant_count[current_goal_index] = 0
@@ -229,10 +206,9 @@ def evaluate_conditions_incrementally(conversation_history: List[dict], evaluato
         print(f"Progress for Goal '{goal_name}': {goal_progress[current_goal_index]:.2f}/{required_progress}")
         print(f"Stagnant rounds: {goal_stagnant_count[current_goal_index]}/{MAX_STAGNANT_ROUNDS}")
 
-        # If goal has stagnated, skip it but don't mark as achieved
         if goal_stagnant_count[current_goal_index] >= MAX_STAGNANT_ROUNDS:
             print(f"Goal '{goal_name}' has stagnated. Moving to next goal.")
-            return False  # Return false but handle goal transition separately
+            return False
 
         return goal_progress[current_goal_index] >= required_progress
 
@@ -295,7 +271,7 @@ def initialize_evaluators_in_background(evaluators):
     threading.Thread(target=background_init, daemon=True).start()
 
 
-# Main program loop
+
 if __name__ == "__main__":
     print("Starting automated sleep therapy session...")
 
@@ -393,15 +369,12 @@ if __name__ == "__main__":
     initialize_goal_progress(len(goals))
     current_goal_index = 0
 
-    # Initial setup
-    # For the first interaction, pass an empty messages list since there's no conversation history yet
     initial_patient_message = get_patient_response("Hello, Iam ready for third session", [])
     print(f"\n{GREEN}Patient:{RESET}")
     for paragraph in initial_patient_message.split('\n'):
         print(textwrap.fill(paragraph, width=70))
     messages.append({"role": "user", "content": initial_patient_message})
 
-    # Initialize therapist_message
     therapist_message = chat_with_gpt(messages)
     print(f"\n{YELLOW}Therapist:{RESET}")
     for paragraph in therapist_message.split('\n'):
@@ -409,39 +382,35 @@ if __name__ == "__main__":
     messages.append({"role": "assistant", "content": therapist_message})
 
     while True:
-        # 1. Get patient's response
         patient_response = get_patient_response(therapist_message, messages)
         print(f"\n{GREEN}Patient:{RESET}")
         for paragraph in patient_response.split('\n'):
             print(textwrap.fill(paragraph, width=70))
         messages.append({"role": "user", "content": patient_response})
 
-        # 2. Get therapist's message
         therapist_message = chat_with_gpt(messages)
         print(f"\n{YELLOW}Therapist:{RESET}")
         for paragraph in therapist_message.split('\n'):
             print(textwrap.fill(paragraph, width=70))
         messages.append({"role": "assistant", "content": therapist_message})
 
-        # 3. Check conditions after both messages are added
         conditions = evaluate_conditions_incrementally(messages, {k: v() for k, v in evaluators.items()},
                                                        last_evaluated_index, current_goal_index)
         if not conditions["all_goals_achieved"]:
 
             print(f"\n{BLUE}Conditions:{RESET}")
             for condition, status in conditions.items():
-                # Special handling for length_within_range which is now a string state
                 if condition == "length_within_range":
-                    print(f"{condition}: {status}")  # Print actual state value
+                    print(f"{condition}: {status}")
                 else:
-                    print(f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
+                    print(f"{condition}: {'True' if status else 'False'}")
             if current_goal_index < len(goals):
                 if goal_stagnant_count[current_goal_index] >= MAX_STAGNANT_ROUNDS:
                     print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' skipped due to stagnation.{RESET}")
                     current_goal_index += 1
-                    conditions["current_goal_achieved"] = False  # Keep as not achieved
+                    conditions["current_goal_achieved"] = False
 
-                else:  # Handle goal progress and system messages
+                else:
                     if conditions["current_goal_achieved"]:
                         print(f"{GREEN}Goal '{goal_names[current_goal_index]}' achieved.{RESET}")
                         goal_progress[current_goal_index] = required_progress
@@ -452,12 +421,11 @@ if __name__ == "__main__":
                             conditions["all_goals_achieved"] = True
                             print(f"\n{BLUE}Conditions:{RESET}")
                             for condition, status in conditions.items():
-                                # Special handling for length_within_range which is now a string state
                                 if condition == "length_within_range":
-                                    print(f"{condition}: {status}")  # Print actual state value
+                                    print(f"{condition}: {status}")
                                 else:
                                     print(
-                                        f"{condition}: {'True' if status else 'False'}")  # Boolean format for other conditions
+                                        f"{condition}: {'True' if status else 'False'}")
                         else:
                             print(f"{YELLOW}Moving to the next goal: {goal_names[current_goal_index]}{RESET}")
                             current_goal_prompt = get_prompt_for_goal(goal_names[current_goal_index])
@@ -501,21 +469,17 @@ if __name__ == "__main__":
 
 
 def wait_for_rate_limit_reset():
-    """Wait for rate limits to reset before final evaluation"""
-    print("\nWaiting 20 seconds for rate limits to reset before final evaluation...")
-    time.sleep(20)  # Wait for 60 seconds
-    print("Resuming evaluation...\n")
+    print("\nWaiting 20 seconds for rate limits to reset...")
+    time.sleep(20)
+    print("Resuming...\n")
 
 
-# Then modify the final evaluation section to include the delay:
 print("\n" + "=" * 50)
 print(f"{BLUE}Final Independent Evaluation Results:{RESET}")
 print("=" * 50)
 
-# Get just patient-therapist exchanges
 final_conversation = format_conversation_for_evaluator(messages)
 
-# Add delay before stay on track evaluation
 wait_for_rate_limit_reset()
 
 print("\n1. Aspect Critics Evaluation:")
@@ -552,7 +516,6 @@ topic_evaluator = TopicAdherenceEvaluator()
 topic_score = topic_evaluator.evaluate_conversation(final_conversation)
 print(f"Topic Adherence Score: {topic_score:.2f}/1.00")
 
-# Add another small delay before the final stay on track evaluation
 wait_for_rate_limit_reset()
 
 print("\n5. Stay on Track Evaluation:")

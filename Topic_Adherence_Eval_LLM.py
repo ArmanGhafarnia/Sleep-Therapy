@@ -63,12 +63,11 @@ class TopicAdherenceEvaluator:
             return [float(score) for score in scores]
         except Exception as e:
             print(f"Error evaluating batch: {e}")
-            return [1.0] * len(responses)  # Default to 1.0 for errors
+            return [1.0] * len(responses)
 
     def evaluate_conversation(self, conversation: List[Tuple[str, str]]) -> float:
         adherence_scores = []
 
-        # Process conversation in batches
         for i in range(0, len(conversation), self.batch_size):
             batch = conversation[i:i + self.batch_size]
 
@@ -76,26 +75,18 @@ class TopicAdherenceEvaluator:
                 batch_scores = self._evaluate_batch(batch)
                 adherence_scores.extend(batch_scores)
 
-                # Add delay between batches to avoid rate limiting
                 if i + self.batch_size < len(conversation):
                     time.sleep(0.2)
 
             except Exception as e:
                 print(f"Error processing batch starting at index {i}: {str(e)}")
-                # If batch fails, assign default scores
                 adherence_scores.extend([1.0] * len(batch))
 
-        # Calculate and return the average score
         return sum(adherence_scores) / len(adherence_scores) if adherence_scores else 0.0
 
     def evaluate_conversation_parallel(self, conversation: List[Tuple[str, str]]) -> float:
-        """
-        Alternative implementation using parallel processing for larger conversations.
-        Use this method for conversations with more than 10 exchanges.
-        """
         adherence_scores = []
 
-        # Split conversation into batches
         batches = [
             conversation[i:i + self.batch_size]
             for i in range(0, len(conversation), self.batch_size)
@@ -116,23 +107,18 @@ class TopicAdherenceEvaluator:
                     print(f"Error processing batch: {str(e)}")
                     adherence_scores.extend([1.0] * len(batch))
 
-                # Add delay between batches
                 time.sleep(0.2)
 
         return sum(adherence_scores) / len(adherence_scores) if adherence_scores else 0.0
 
 
-# Example usage
 if __name__ == "__main__":
-    # Sample conversation for testing
     conversation = [
         ("I have trouble sleeping", "Can you tell me more about your sleep difficulties?"),
         ("I lie awake for hours", "How long does it typically take you to fall asleep?")
     ]
 
-    # Initialize evaluator
     evaluator = TopicAdherenceEvaluator()
 
-    # Evaluate conversation
     score = evaluator.evaluate_conversation(conversation)
     print(f"Topic Adherence Score: {score:.2f}")

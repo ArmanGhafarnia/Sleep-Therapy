@@ -38,7 +38,6 @@ def evaluate_message(patient_message: str, therapist_message: str, previous_mess
 Tuple[str, str]:
     context = "\n".join(previous_messages)
 
-    # Check if patient's message is off-topic
     patient_messages = [
         {"role": "system",
          "content": "You are an evaluator that determines if a patient's statement is off-topic in a sleep therapy session."},
@@ -50,7 +49,6 @@ Tuple[str, str]:
     patient_evaluation = patient_response["choices"][0]["message"]["content"].strip().lower()
 
     if "no" in patient_evaluation:
-        # Check if therapist redirected successfully
         redirection_messages = [
             {"role": "system",
              "content": "You are an evaluator that determines if a therapist's response redirects conversation back to sleep therapy."},
@@ -70,7 +68,6 @@ def evaluate_conversation_stay_on_track(conversation: List[Tuple[str, str]], mod
     successful_redirections = 0
     previous_messages = []
 
-    # Process conversation in batches
     for i in range(0, len(conversation), batch_size):
         batch = conversation[i:i + batch_size]
 
@@ -98,7 +95,6 @@ def evaluate_conversation_stay_on_track(conversation: List[Tuple[str, str]], mod
                 except Exception as e:
                     print(f"Error processing message: {str(e)}")
 
-        # Add delay between batches
         time.sleep(0.2)
 
     if total_off_topic == 0:

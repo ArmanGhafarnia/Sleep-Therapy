@@ -1,30 +1,24 @@
 def length_checker(conversation):
-    # Define thresholds
-    # For ~30-60 minute therapy session with 8 goals
-    min_words = 1500  # ~30-35 words per exchange
-    max_words = 3000  # ~60-70 words per exchange
-    min_chars = 9000  # ~180-200 chars per exchange
-    max_chars = 18000  # ~350-400 chars per exchange
+    # For 30-60 minute therapy session with 8 goals
+    min_words = 1500  # 30-35 words per exchange
+    max_words = 3000  # 60-70 words per exchange
+    min_chars = 9000  # 180-200 chars per exchange
+    max_chars = 18000  # 350-400 chars per exchange
 
-    # Initialize counts
+
     total_word_count = 0
     total_char_count = 0
 
-    # Iterate through conversation to calculate word and character counts
     for patient_sentence, therapist_sentence in conversation:
-        # Count words and characters for patient
         patient_words = len(patient_sentence.split())
         patient_chars = len(patient_sentence)
 
-        # Count words and characters for therapist
         therapist_words = len(therapist_sentence.split())
         therapist_chars = len(therapist_sentence)
 
-        # Update total counts
         total_word_count += patient_words + therapist_words
         total_char_count += patient_chars + therapist_chars
 
-    # Check word count range
     if min_words <= total_word_count <= max_words:
         word_check = "Pass"
     elif total_word_count < min_words:
@@ -32,7 +26,6 @@ def length_checker(conversation):
     else:
         word_check = "Too Long"
 
-    # Check character count range
     if min_chars <= total_char_count <= max_chars:
         char_check = "Pass"
     elif total_char_count < min_chars:
@@ -40,7 +33,6 @@ def length_checker(conversation):
     else:
         char_check = "Too Long"
 
-    # Return results
     return {
         "Total Word Count": total_word_count,
         "Total Character Count": total_char_count,
@@ -48,7 +40,6 @@ def length_checker(conversation):
         "Character Check": char_check
     }
 
-# Example conversation
 conversation = [
     ("I have been feeling very anxious lately, especially at night.", "Can you tell me more about what happens when you try to sleep?"),
     ("I just can't seem to relax. I keep worrying about work and other things.", "It sounds like your mind is very active at night. Let's explore some ways to help calm your thoughts."),
@@ -98,17 +89,15 @@ conversation = [
 ]
 
 def print_evaluation_results(evaluation_result):
-    # Define color codes
     def get_color(status):
         if status == "Too Short":
-            return "\033[91m"  # Red
+            return "\033[91m"
         elif status == "Too Long":
-            return "\033[93m"  # Yellow
+            return "\033[93m"
         elif status == "Pass":
-            return "\033[92m"  # Green
-        return "\033[0m"  # Default color
+            return "\033[92m"
+        return "\033[0m"
 
-    # Print evaluation results with colors
     print(f"Total Word Count: {evaluation_result['Total Word Count']}")
     print(f"Total Character Count: {evaluation_result['Total Character Count']}")
     word_check_color = get_color(evaluation_result["Word Check"])
@@ -116,8 +105,7 @@ def print_evaluation_results(evaluation_result):
     char_check_color = get_color(evaluation_result["Character Check"])
     print(f"Character Check: {char_check_color}{evaluation_result['Character Check']}\033[0m")
 
-# Run the length checker
 evaluation_result = length_checker(conversation)
-# print_evaluation_results(evaluation_result)
+
 
 
