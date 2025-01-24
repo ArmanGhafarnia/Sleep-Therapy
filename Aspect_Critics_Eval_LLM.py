@@ -3,7 +3,7 @@ import concurrent.futures
 from typing import List
 import time
 
-openai.api_key = "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"
+openai.api_key = "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"
 
 
 class AspectCritic:

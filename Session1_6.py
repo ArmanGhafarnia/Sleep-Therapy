@@ -17,7 +17,7 @@ tlink = Script(src="https://cdn.tailwindcss.com"),
 dlink = Link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css")
 app = FastHTML(hdrs=(tlink, dlink, picolink), exts='ws')
 
-openai.api_key = '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'
+openai.api_key = "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"
 
 GREEN = '\033[92m'
 YELLOW = '\033[93m'
