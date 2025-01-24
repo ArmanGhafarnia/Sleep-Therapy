@@ -3,8 +3,8 @@ import textwrap
 import concurrent.futures
 import threading
 from typing import List
-from Aspect_Aritic_Aval_LLM import AspectCritic
-from Goal_Accuracy import ConversationEvaluator
+from Aspect_Critics_Eval_LLM import AspectCritic
+from Goal_Accuracy_Eval_LLM import ConversationEvaluator
 from Length_Eval import length_checker
 from Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
 from Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
@@ -175,7 +175,7 @@ def format_last_conversation_tuple(conversation_history):
 
 # Goal progress tracking
 goal_progress = {}
-required_progress = 0.95
+required_progress = 1.00
 goal_stagnant_count = {}
 MAX_STAGNANT_ROUNDS = 6  # Skip goal after 6 rounds of no progress
 
@@ -529,7 +529,7 @@ for check, result in results.items():
 
 print("\n3. Goal Accuracy Evaluation:")
 goal_evaluator = ConversationEvaluator(goals=goals, goal_names=goal_names)
-ACHIEVEMENT_THRESHOLD = 0.85
+ACHIEVEMENT_THRESHOLD = 0.90
 
 for i, (goal, goal_name) in enumerate(zip(goals, goal_names)):
     goal_score = goal_evaluator.check_goal_achieved(goal, final_conversation)

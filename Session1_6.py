@@ -2,8 +2,8 @@ import openai
 import textwrap
 import concurrent.futures
 import threading
-from Aspect_Aritic_Aval_LLM import AspectCritic
-from Goal_Accuracy import ConversationEvaluator
+from Aspect_Critics_Eval_LLM import AspectCritic
+from Goal_Accuracy_Eval_LLM import ConversationEvaluator
 from Length_Eval import length_checker
 from Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
 from Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
@@ -322,7 +322,7 @@ def format_last_conversation_tuple(conversation_history):
 
 # Goal progress tracking
 goal_progress = {}
-required_progress = 0.95
+required_progress = 1.00
 goal_stagnant_count = {}
 MAX_STAGNANT_ROUNDS = 6
 
