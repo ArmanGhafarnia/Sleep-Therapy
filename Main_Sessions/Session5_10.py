@@ -2,15 +2,14 @@ import openai
 import textwrap
 import concurrent.futures
 import threading
-from Aspect_Critics_Eval_LLM import AspectCritic
-from Goal_Accuracy_Eval_LLM import ConversationEvaluator
-from Length_Eval import length_checker
-from Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
-from Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
+from LLM_Based_Evaluators.Aspect_Critics_Eval_LLM import AspectCritic
+from LLM_Based_Evaluators.Goal_Accuracy_Eval_LLM import ConversationEvaluator
+from Non_LLM_Evaluators.Length_Eval import length_checker
+from LLM_Based_Evaluators.Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
+from LLM_Based_Evaluators.Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
 from fasthtml.common import *
 import asyncio
 from fasthtml.common import Raw
-
 
 
 tlink = Script(src="https://cdn.tailwindcss.com"),
@@ -34,7 +33,6 @@ def StarBackground():
 
         delay = random.uniform(0, 3)
         duration = random.uniform(3, 5)
-
         star = f'''
             <polygon 
                 points="0,-4 1,-1 4,0 1,1 0,4 -1,1 -4,0 -1,-1" 
@@ -65,7 +63,6 @@ def StarBackground():
             </svg>
         </div>
     ''')
-
 def ChatMessage(msg_idx, **kwargs):
     msg = messages[msg_idx]
     if msg['role'] == 'system':
@@ -73,7 +70,6 @@ def ChatMessage(msg_idx, **kwargs):
     bubble_class = "chat-bubble bg-blue-600 text-white" if msg[
                                                                'role'] == 'user' else "chat-bubble bg-purple-600 text-white"
     chat_class = "chat-end" if msg['role'] == 'user' else "chat-start"
-
     header_class = "chat-header mr-2 mb-1" if msg['role'] == 'user' else "chat-header ml-2 mb-1"
 
     content_div = Div(
@@ -93,7 +89,6 @@ def ChatMessage(msg_idx, **kwargs):
         cls=f"chat {chat_class}",
         **kwargs
     )
-
 
 def ChatInput():
     return Input(
@@ -262,6 +257,7 @@ async def chat_with_gpt(messages, model="gpt-4o", max_retries=5):
 
 last_evaluated_index = -1
 
+
 def format_conversation_for_evaluator(conversation_history):
     formatted_conversation = []
     current_pair = {}
@@ -421,53 +417,66 @@ def initialize_evaluators_in_background(evaluators):
 
 messages = [
     {"role": "system",
-     "content": "You are a sleep therapy expert tasked with helping patients overcome insomnia..."
-                " Today, your focus is on conducting an initial assessment using the Insomnia Intake Interview"
-                " to gather detailed information about the patient's sleep patterns and issues."
-                " Encourage the patient to maintain a Sleep Diary, and utilize the Insomnia Severity Index to"
-                " quantify the severity of their symptoms."
-                " ensuring you gather all necessary details without overwhelming the patient."
-                " Avoid speaking too much when it's unnecessary."
-                " Additional communication guidelines:"
-                " - Be direct and precise in your questions and responses"
-                " - Ask one clear question at a time"
-                " - Avoid unnecessary acknowledgments or wrap-up statements"
-                " - Skip phrases like 'feel free to reach out', 'take care', 'looking forward to'"
-                " - Focus only on relevant therapeutic content"
-                " - Remove redundant courtesies and pleasantries"}
+     "content": """You are a sleep therapy expert conducting the final consolidation session.
+
+Response requirements:
+- Ask ONE clear question at a time
+- Keep responses to 2-3 sentences
+- Focus on maintenance strategies
+- Address specific challenges
+- Guide toward independence
+
+Session goals:
+- Review key improvements
+- Fine-tune strategies
+- Build self-management skills
+- Address remaining issues
+- Plan for long-term success
+
+Guidelines:
+- Direct and focused responses
+- No lengthy explanations
+- Practical, actionable advice
+- Work toward closure"""}
 ]
 
 goal_names = [
-    "Gather Information",
-    "Assessing Circadian Tendencies and Factors",
-    "Utilization of the Sleep Diary",
-    "Evaluating Comorbidities",
-    "Open-Ended Questions",
-    "Assess Intake Interview",
-    "Identifies Unhealthy Sleep Practices",
-    "Treatment Goals Establishment",
+    "Assessment of Treatment Readiness",
+    "Detailed Case Conceptualization",
+    "Case Conceptualization Form Simulation",
+    "Understanding Comorbidities",
+    "Therapeutic Component Selection",
+    "Flexibility in Treatment Application",
+    "Individual Tailoring",
+    "Anticipation of Adherence Challenges",
+    "Sequential Treatment Implementation",
+    "Evaluation of Treatment Effectiveness"
 ]
 
 goals = [
-    "The model should effectively gather comprehensive information about the patient's current sleep issues, including difficulty falling or staying asleep, the frequency of sleep disruptions, and their impact on daily life and information about any past treatments and interventions the patient has tried, and their outcomes.",
-    "The model needs to accurately assess the patient's circadian rhythm influences on sleep problems, such as being a 'night owl' or 'morning person' and how these tendencies affect their sleep quality and timing.",
-    "The model should encourage the patient to maintain a sleep diary as a critical tool for collecting accurate data about their sleep patterns.",
-    "It is crucial that the model explores and identifies any psychiatric, medical, or other sleep disorders that coexist with the insomnia.",
-    "The model should ask open-ended questions that encourage the patient to describe their sleep problems in detail.",
-    "Assess the model's proficiency in conducting a thorough intake interview that covers key areas necessary for an accurate understanding and subsequent treatment of insomnia. This includes gathering detailed information on the patient's sleep patterns, lifestyle and environmental influences, psychological and emotional factors, and medical history.",
-    "The model identifies and discusses unhealthy sleep practices, such as poor sleep hygiene, the use of substances that disrupt sleep (like caffeine or alcohol close to bedtime), and other behaviors detrimental to sleep like excessive bedtime worry or screen time before sleep.",
-    "The model should be able to help the patient set realistic and achievable sleep improvement goals based on the assessment findings.",
+    "The therapy session should assess the patient’s readiness for change, determining their willingness to adopt new sleep behaviors. This is critical for effectively timing and implementing interventions.",
+    "Beyond the use of a form, the therapy should involve a detailed conceptualization that considers factors like life stressors, environmental influences, and personal habits that affect sleep.",
+    "The session should simulate the use of a case conceptualization form to systematically organize and guide the treatment process, considering sleep habits, comorbidities, and behavioral factors.",
+    "The model should demonstrate understanding of the impact of various comorbidities on insomnia and incorporate this knowledge into therapy suggestions.",
+    "The session should reflect thoughtful selection of CBT-I components that are most appropriate to the patient’s case, considering readiness for change, obstacles, and the patient’s sleep environment.",
+    "The therapy should adjust the standard CBT-I protocol to fit the patient’s specific situation, such as modifying techniques for comorbid conditions like anxiety or depression.",
+    "The treatment should be tailored to the individual patient’s symptoms and history, using patient-specific information to guide the conversation and interventions.",
+    "The model should anticipate potential adherence challenges, discussing strategies to overcome these barriers, motivating the patient, and setting realistic expectations.",
+    "It should effectively sequence treatment interventions, ensuring that each component builds on the previous one and corresponds to the patient’s evolving therapeutic needs.",
+    "The model should evaluate the effectiveness of implemented treatments, incorporating patient feedback and adjusting the plan as necessary to ensure optimal outcomes."
 ]
 
 goal_specific_prompts = {
-    "Gather Information": "Focus on gathering comprehensive information about the patient's current sleep issues, including difficulty falling or staying asleep, the frequency of sleep disruptions, and their impact on daily life. Encourage the patient to describe in detail when these issues typically occur and how often, as well as the effects they have on their mood, energy, and day-to-day activities. Collect detailed information about any past treatments and interventions the patient has tried, as well as their outcomes.",
-    "Assessing Circadian Tendencies and Factors": "Focus on assessing the patient's circadian rhythm tendencies by exploring their natural sleep-wake patterns, preference for morning or evening activities, and how these preferences affect their daily functioning. Inquire about their most and least energetic times of day and any regular patterns in their alertness and sleepiness. Use this information to understand how their internal clock may be influencing their insomnia and discuss potential adjustments to align their lifestyle more closely with their circadian rhythms for improved sleep.",
-    "Utilization of the Sleep Diary": "Encourage the patient to maintain a sleep diary to meticulously record their daily sleep patterns, including bedtime, wake time, total sleep time, perceived sleep quality, and daytime symptoms. Explain the importance of this diary in identifying patterns and triggers affecting their sleep. Emphasize how the collected data will be used to inform and tailor treatment strategies, making adjustments based on observed patterns to improve the effectiveness of the interventions.",
-    "Evaluating Comorbidities": "Thoroughly evaluate any comorbid psychiatric, medical, or other sleep disorders that may coexist with the patient's insomnia. Ask detailed questions about the patient's overall health, including any chronic conditions, mental health issues, and medications that might affect sleep. Assess how these comorbid conditions influence their sleep patterns and overall wellbeing. Use this comprehensive evaluation to adjust the treatment plan to address both insomnia and the complexities introduced by these comorbidities.",
-    "Open-Ended Questions": "Employ open-ended questions to enable a deep dive into the patient's subjective sleep experiences and perceptions. Focus on eliciting detailed descriptions of the patient's typical sleep patterns, nightly routines, and any specific sleep disturbances they encounter. Use these questions to facilitate a comprehensive dialogue that encourages the patient to share more about their sleep challenges, providing valuable insights for diagnosis and treatment planning.",
-    "Assess Intake Interview": "Conduct a thorough intake interview to comprehensively assess the patient's sleep problems and related factors. Focus on gathering detailed information about the patient's sleep history, current sleep patterns, lifestyle habits affecting sleep, and any previous sleep treatments. Include questions about psychological, environmental, and physiological factors that could impact sleep. This information will form the basis for understanding the full scope of the insomnia and planning effective treatment.",
-    "Identifies Unhealthy Sleep Practices": "identify and discuss any unhealthy sleep practices that the patient engages in, such as irregular sleep schedules, stimulating activities before bedtime, or use of electronics in the bedroom. Encourage the patient to recognize these behaviors and understand how they may negatively impact sleep quality. Use this opportunity to educate the patient on the effects of these habits and begin to explore changes that could lead to improved sleep hygiene and better sleep quality.",
-    "Treatment Goals Establishment": "Work collaboratively with the patient to establish realistic and achievable treatment goals based on the comprehensive assessment findings. Discuss what the patient hopes to accomplish through treatment and align these expectations with practical strategies and interventions. Ensure these goals are specific, measurable, and tailored to the individual's needs, considering their lifestyle, sleep patterns, and any comorbid conditions. Regularly revisit and adjust these goals as needed to reflect the patient's progress and any new insights gained during therapy."
+    "Assessment of Treatment Readiness": "Begin the session by discussing the patient's past experiences and current perceptions about sleep and treatment. Assess their willingness and readiness to engage in therapy by exploring their motivations, hesitations, and previous attempts at managing their sleep issues. Explain how their commitment and active participation are crucial for the success of the therapy. Provide clear examples of how behavioral changes can positively impact sleep and ask for their thoughts on making such changes.",
+    "Detailed Case Conceptualization": "Use a structured approach to delve into the patient's personal history, sleep patterns, lifestyle choices, and environmental factors that may be influencing their sleep. This should include a discussion of stress levels, work-life balance, bedtime routines, and any other relevant psychosocial factors. Guide the patient through a detailed mapping of these elements and their interconnections to build a comprehensive understanding of their sleep disturbances. This conceptualization helps in identifying specific targets for intervention.",
+    "Case Conceptualization Form Simulation": "Introduce and collaboratively fill out a case conceptualization form, explaining each section such as sleep habits, comorbidities, emotional stressors, and behavioral factors. Engage the patient in a step-by-step discussion, encouraging them to provide input and reflect on how each aspect of their life contributes to their sleep issues. This exercise aims to make the patient an active participant in their treatment planning, enhancing their understanding and ownership of the therapeutic process.",
+    "Understanding Comorbidities": "Discuss in detail the comorbidities that might be impacting the patient's insomnia, such as anxiety, depression, chronic pain, or other medical conditions. Explore how these comorbidities interact with their sleep problems and how treating insomnia might also help manage these conditions. Explain the bidirectional nature of sleep and health issues to help the patient see the holistic importance of sleep improvement.",
+    "Therapeutic Component Selection": "Present and discuss various components of Cognitive Behavioral Therapy for Insomnia (CBT-I), such as stimulus control, sleep restriction, and cognitive restructuring. Explain how each component works and its benefits, and use the patient’s specific sleep issues and preferences to decide together which components to prioritize in the treatment plan. This personalized selection process helps ensure that the therapy is tailored to the patient's unique needs.",
+    "Flexibility in Treatment Application": "Prepare to adapt therapy techniques based on ongoing assessments and the patient’s evolving needs. Discuss potential adjustments like modifying sleep schedules or introducing relaxation techniques, explaining why and how these changes might help. This approach emphasizes flexibility and responsiveness, which are key in managing complex or changing sleep issues.",
+    "Individual Tailoring": "Focus on tailoring the therapy to fit the patient’s specific circumstances, including their daily schedule, personal life stresses, and sleep environment. Discuss how personalized interventions, such as adjusting the bedroom environment or customizing sleep/wake times, can make therapy more effective. Encourage the patient to give feedback on what feels most relevant and manageable for them.",
+    "Anticipation of Adherence Challenges": "Proactively discuss potential challenges that might impede adherence to the treatment plan, such as inconsistent schedules, motivation dips, or external stressors. Explore strategies to overcome these barriers, such as setting reminders, engaging support from family members, or adjusting goals to be more achievable. This discussion helps prepare the patient to handle difficulties throughout the treatment process.",
+    "Sequential Treatment Implementation": "Outline the planned sequence of therapeutic interventions, explaining how each step builds on the previous one to progressively improve sleep. Discuss the rationale behind the sequence, such as starting with sleep hygiene improvements and gradually introducing more intensive interventions like sleep restriction therapy. This methodical approach helps the patient understand the progression and purpose of each phase of therapy.",
+    "Evaluation of Treatment Effectiveness": "Regularly evaluate the effectiveness of the treatment through discussions with the patient about their sleep diary, symptom changes, and overall satisfaction with the progress. Use this feedback to make informed adjustments to the treatment plan, ensuring that it remains aligned with the patient's needs and goals. This ongoing evaluation fosters a dynamic and responsive therapeutic environment."
 }
 
 
@@ -504,7 +513,6 @@ current_goal_index = 0
 @app.ws('/wscon')
 async def ws(msg: str, send):
     global current_goal_index, messages
-
     messages.append({"role": "user", "content": msg.rstrip()})
     swap = 'beforeend'
 
@@ -513,13 +521,13 @@ async def ws(msg: str, send):
     await send(ChatInput())
 
     therapist_message = await chat_with_gpt(messages)
-
     print(f"\n{YELLOW}Therapist:{RESET}")
     for paragraph in therapist_message.split('\n'):
         print(textwrap.fill(paragraph, width=70))
 
     messages.append({"role": "assistant", "content": therapist_message})
     await send(Div(ChatMessage(len(messages) - 1), hx_swap_oob=swap, id="chatlist"))
+
     conditions = evaluate_conditions_incrementally(messages, {k: v() for k, v in evaluators.items()},
                                                    last_evaluated_index, current_goal_index)
 

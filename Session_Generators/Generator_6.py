@@ -3,13 +3,12 @@ import textwrap
 import concurrent.futures
 import threading
 from typing import List
-from Aspect_Critics_Eval_LLM import AspectCritic
-from Goal_Accuracy_Eval_LLM import ConversationEvaluator
-from Length_Eval import length_checker
-from Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
-from Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
+from LLM_Based_Evaluators.Aspect_Critics_Eval_LLM import AspectCritic
+from LLM_Based_Evaluators.Goal_Accuracy_Eval_LLM import ConversationEvaluator
+from Non_LLM_Evaluators.Length_Eval import length_checker
+from LLM_Based_Evaluators.Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
+from LLM_Based_Evaluators.Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
 import time
-
 
 openai.api_key = "your-api-key-here"
 
@@ -18,43 +17,38 @@ YELLOW = '\033[93m'
 RESET = '\033[0m'
 BLUE = '\033[94m'
 
-PATIENT_PROFILE = """You are a 60-year-old accountant continuing sleep therapy.
+PATIENT_PROFILE = """You are a 60-year-old accountant currently on disability due to fibromyalgia who has been struggling with chronic insomnia for 25 years.
+Your symptoms include:
+- Takes 1-2 hours to fall asleep
+- Wakes up 1-3 times during the night, awake for 1-2 hours total
+- Early morning awakening (5:00-6:00am)
+- Fatigue and low energy during the day 
+- Dozes off unintentionally when reclining during day and evening
+- Pain symptoms worsening
+- Reduced activity level
 
-Communication style:
-- Keep responses focused and concise (2-3 sentences)
-- Share specific challenges or improvements since last session
-- Express concerns briefly but clearly
-- If something is unclear, ask one focused question
-- Describe only the most relevant details
-- Stay on the current topic
-- Avoid excessive politeness or premature session conclusions
-- Focus on engaging with the therapist's questions rather than wrapping up
-- Express needs and concerns directly without overly deferential language
-- Maintain active engagement throughout the session
-- Save session conclusions for therapist's guidance
-
-Progress from last sessions:
-- Started sleep restriction (11:30pm-6:30am window)
-- Using CPAP more consistently through the night
-- Time to fall asleep reduced to 35 minutes (from 80 minutes)
-- Sleep efficiency improved to 91%
-- Moved back to sleeping in bedroom with wife
-- Having morning coffee with wife helps with wake time adherence
-- Increased activity with grandchildren
-- Less dozing during day
-
-Current challenges:
-- Apprehension about wife's snoring affecting sleep
-- Some difficulty falling asleep when first moved back to shared bedroom
-- Still using zolpidem 7.5mg nightly after 18 years
-- Pain symptoms still present
-- Sometimes forgets to put CPAP mask back on if removed during night
-- Not yet confident about sleep without medication
+Your sleep environment:
+- Lives with wife but sleeps in separate room due to her snoring
+- Has CPAP for mild-moderate sleep apnea but often removes mask during sleep
+- Adequate sleep environment
 
 Medical conditions:
-- Fibromyalgia (on duloxetine and gabapentin)
-- Mild to moderate sleep apnea using CPAP
-- Features of depression but not meeting full criteria"""
+- Fibromyalgia (treated with duloxetine and gabapentin)
+- Mild to moderate sleep apnea (prescribed CPAP)
+- Several features of major depressive disorder but does not meet full criteria
+
+Treatment history:
+- Taking zolpidem 7.5mg for 18 years
+- CPAP prescribed 5 years ago but suboptimal adherence
+- CBT-I recommended 5 years ago but did not pursue due to distance
+
+Response style:
+- Be direct and concise
+- Focus on providing relevant information
+- Avoid unnecessary pleasantries and repetitive statements
+- Don't use phrases like "thank you", "take care", "looking forward" unless specifically relevant
+- Stay focused on describing your sleep issues and answering questions
+"""
 
 
 class LazyEvaluator:
@@ -102,7 +96,6 @@ def get_patient_response(therapist_message, conversation_history):
     for msg in conversation_history:
         if msg['role'] == 'system':
             continue
-
         if msg['role'] == 'user':
             messages.append({"role": "assistant", "content": msg['content']})
         elif msg['role'] == 'assistant':
@@ -158,7 +151,6 @@ goal_progress = {}
 required_progress = 1.00
 goal_stagnant_count = {}
 MAX_STAGNANT_ROUNDS = 6
-
 
 def initialize_goal_progress(num_goals):
     global goal_progress, goal_stagnant_count
@@ -273,61 +265,58 @@ def initialize_evaluators_in_background(evaluators):
     threading.Thread(target=background_init, daemon=True).start()
 
 
-
 if __name__ == "__main__":
     print("Starting automated sleep therapy session...")
 
     messages = [
         {"role": "system",
-         "content": """You are a sleep therapy expert focusing on managing sleep-related arousal and anxiety in this third session.
-
-    Communication requirements:
-    - Ask ONE clear question at a time
-    - Focus on most pressing current issue
-    - Avoid repeating information 
-    - If providing advice, limit to 2-3 key points
-    - Build on previous session progress
-
-    Session objectives:
-    - Review success with previous techniques
-    - Address arousal and anxiety management
-    - Fine-tune sleep restriction timing
-    - Enhance relaxation strategies
-
-    Additional guidelines:
-    - Direct and precise responses
-    - Focus only on relevant therapeutic content
-    - Remove redundant courtesies"""}
+         "content": "You are a sleep therapy expert tasked with helping patients overcome insomnia."
+                    " Today, your focus is on conducting an initial assessment using the Insomnia Intake Interview"
+                    " to gather detailed information about the patient's sleep patterns and issues."
+                    " Encourage the patient to maintain a Sleep Diary, and utilize the Insomnia Severity Index to"
+                    " quantify the severity of their symptoms."
+                    " ensuring you gather all necessary details without overwhelming the patient."
+                    " Avoid speaking too much when it's unnecessary."
+                    " Additional communication guidelines:"
+                    " - Be direct and precise in your questions and responses"
+                    " - Ask one clear question at a time"
+                    " - Avoid unnecessary acknowledgments or wrap-up statements"
+                    " - Skip phrases like 'feel free to reach out', 'take care', 'looking forward to'"
+                    " - Focus only on relevant therapeutic content"
+                    " - Remove redundant courtesies and pleasantries"}
     ]
 
     goal_names = [
-        "Managing High Arousal States",
-        "Sleep Hygiene Education",
-        "Providing Rationale for Interventions",
-        "Behavioral Strategies Adherence",
-        "Sleep Mechanisms Education",
-        "Assessing Strategy Effectiveness",
-        "Personalized Sleep Strategies"
+        "Gather Information",
+        "Assessing Circadian Tendencies and Factors",
+        "Utilization of the Sleep Diary",
+        "Evaluating Comorbidities",
+        "Open-Ended Questions",
+        "Assess Intake Interview",
+        "Identifies Unhealthy Sleep Practices",
+        "Treatment Goals Establishment",
     ]
 
     goals = [
-        "The model should effectively discuss techniques to manage high arousal states that are disruptive to sleep. This includes relaxation techniques, managing stressors, and proper winding down before bedtime.",
-        "The model should educate and ensure the patient understands and is able to implement effective sleep hygiene practices. This includes maintaining a consistent sleep schedule, optimizing the sleep environment (e.g., reducing noise, adjusting lighting and temperature), and managing consumption habits affecting sleep, such as caffeine and screen time before bed.",
-        "Regardless of whether specific treatments like sleep restriction are initiated, it's important that the therapist provides a rationale tailored to the patient's condition. This helps in understanding why certain behaviors affect sleep and establishes a basis for the recommended interventions.",
-        "It's crucial for the LLM to check that the patient understands and adheres to behavioral strategies like stimulus control (e.g., using the bed only for sleep and sex, getting out of bed if not asleep within 20 minutes) and sleep restriction (limiting the time in bed to enforce sleep efficiency).",
-        "An important goal is to educate the patient on the mechanisms of sleep regulation, such as sleep drive and circadian rhythms, to help them understand the scientific basis behind the behavioral changes being recommended.",
-        "Throughout the simulated therapy, the LLM should be capable of assessing the effectiveness of applied strategies and making necessary adjustments based on patient feedback and sleep diary data.",
-        "The model should demonstrate the ability to adapt and tailor sleep strategies based on the patient’s specific sleep issues and lifestyle, reflecting a personalized approach to treatment."
+        "The model should effectively gather comprehensive information about the patient's current sleep issues, including difficulty falling or staying asleep, the frequency of sleep disruptions, and their impact on daily life and information about any past treatments and interventions the patient has tried, and their outcomes.",
+        "The model needs to accurately assess the patient's circadian rhythm influences on sleep problems, such as being a 'night owl' or 'morning person' and how these tendencies affect their sleep quality and timing.",
+        "The model should encourage the patient to maintain a sleep diary as a critical tool for collecting accurate data about their sleep patterns.",
+        "It is crucial that the model explores and identifies any psychiatric, medical, or other sleep disorders that coexist with the insomnia.",
+        "The model should ask open-ended questions that encourage the patient to describe their sleep problems in detail.",
+        "Assess the model's proficiency in conducting a thorough intake interview that covers key areas necessary for an accurate understanding and subsequent treatment of insomnia. This includes gathering detailed information on the patient's sleep patterns, lifestyle and environmental influences, psychological and emotional factors, and medical history.",
+        "The model identifies and discusses unhealthy sleep practices, such as poor sleep hygiene, the use of substances that disrupt sleep (like caffeine or alcohol close to bedtime), and other behaviors detrimental to sleep like excessive bedtime worry or screen time before sleep.",
+        "The model should be able to help the patient set realistic and achievable sleep improvement goals based on the assessment findings.",
     ]
 
     goal_specific_prompts = {
-        "Managing High Arousal States": "Initiate a conversation about the variety of techniques available to manage high arousal states before bedtime. Explore and elaborate on relaxation strategies such as guided imagery, autogenic training, and meditation. Ask the patient to describe their current pre-sleep routine in detail, and then collaboratively discuss how they might integrate specific relaxation practices. Offer to guide them through a relaxation session or provide resources for home practice.",
-        "Sleep Hygiene Education": "Begin by explaining the concept of sleep hygiene and its critical role in improving sleep quality. Review each aspect of sleep hygiene with the patient, including sleep schedule regularity, the sleeping environment's suitability (quiet, dark, and cool), and pre-sleep activities that should be avoided such as significant caffeine or electronic device usage near bedtime. Ask the patient to keep a sleep hygiene diary for a week, noting down their routines, and use this as a basis for recommending personalized adjustments.",
-        "Providing Rationale for Interventions": "Educate the patient on the scientific reasoning behind each recommended sleep intervention. For instance, explain how sleep restriction helps to build a sleep debt that enhances sleep drive, or how stimulus control helps to associate the bed with sleepiness rather than wakefulness. Use diagrams or simple graphics if necessary to illustrate concepts like the sleep-wake cycle. Ensure the patient understands these rationales to increase their commitment to adhering to these techniques.",
-        "Behavioral Strategies Adherence": "Regularly evaluate the patient’s adherence to behavioral strategies such as maintaining a strict sleep-wake schedule and using the bed only for sleep and sex. Discuss any obstacles they encounter in following these routines, and offer practical solutions or adjustments. Emphasize the importance of persistence and consistency in experiencing the benefits, and consider setting short-term goals to build motivation.",
-        "Sleep Mechanisms Education": "Provide an in-depth explanation of the mechanisms that govern sleep including circadian rhythms and the sleep/wake homeostasis. Discuss how alterations in exposure to natural light, activity levels, and evening routines can impact these systems. Illustrate these points with examples from the patient’s own life, asking them to identify potential areas for adjustment that could lead to improved sleep.",
-        "Assessing Strategy Effectiveness": "Use each session to methodically review the patient’s progress and the effectiveness of the sleep strategies implemented. Have the patient share insights from their sleep diary, focusing on changes in sleep latency, nocturnal awakenings, and overall sleep quality. Adjust the treatment plan based on these observations and feedback, ensuring that it remains aligned with the patient's evolving sleep patterns and lifestyle changes.",
-        "Personalized Sleep Strategies": "Tailor every aspect of the intervention to the patient’s unique lifestyle, health status, and personal preferences. Discuss in detail their evening activities, their responsibilities that might impact sleep, and their sleep environment. Customize recommendations to fit seamlessly into their personal and professional life, allowing for flexibility and adjustments as needed. Engage them in a partnership where they feel empowered to suggest changes based on their experiences."
+        "Gather Information": "Focus on gathering comprehensive information about the patient's current sleep issues, including difficulty falling or staying asleep, the frequency of sleep disruptions, and their impact on daily life. Encourage the patient to describe in detail when these issues typically occur and how often, as well as the effects they have on their mood, energy, and day-to-day activities. Collect detailed information about any past treatments and interventions the patient has tried, as well as their outcomes.",
+        "Assessing Circadian Tendencies and Factors": "Focus on assessing the patient's circadian rhythm tendencies by exploring their natural sleep-wake patterns, preference for morning or evening activities, and how these preferences affect their daily functioning. Inquire about their most and least energetic times of day and any regular patterns in their alertness and sleepiness. Use this information to understand how their internal clock may be influencing their insomnia and discuss potential adjustments to align their lifestyle more closely with their circadian rhythms for improved sleep.",
+        "Utilization of the Sleep Diary": "Encourage the patient to maintain a sleep diary to meticulously record their daily sleep patterns, including bedtime, wake time, total sleep time, perceived sleep quality, and daytime symptoms. Explain the importance of this diary in identifying patterns and triggers affecting their sleep. Emphasize how the collected data will be used to inform and tailor treatment strategies, making adjustments based on observed patterns to improve the effectiveness of the interventions.",
+        "Evaluating Comorbidities": "Thoroughly evaluate any comorbid psychiatric, medical, or other sleep disorders that may coexist with the patient's insomnia. Ask detailed questions about the patient's overall health, including any chronic conditions, mental health issues, and medications that might affect sleep. Assess how these comorbid conditions influence their sleep patterns and overall wellbeing. Use this comprehensive evaluation to adjust the treatment plan to address both insomnia and the complexities introduced by these comorbidities.",
+        "Open-Ended Questions": "Employ open-ended questions to enable a deep dive into the patient's subjective sleep experiences and perceptions. Focus on eliciting detailed descriptions of the patient's typical sleep patterns, nightly routines, and any specific sleep disturbances they encounter. Use these questions to facilitate a comprehensive dialogue that encourages the patient to share more about their sleep challenges, providing valuable insights for diagnosis and treatment planning.",
+        "Assess Intake Interview": "Conduct a thorough intake interview to comprehensively assess the patient's sleep problems and related factors. Focus on gathering detailed information about the patient's sleep history, current sleep patterns, lifestyle habits affecting sleep, and any previous sleep treatments. Include questions about psychological, environmental, and physiological factors that could impact sleep. This information will form the basis for understanding the full scope of the insomnia and planning effective treatment.",
+        "Identifies Unhealthy Sleep Practices": "identify and discuss any unhealthy sleep practices that the patient engages in, such as irregular sleep schedules, stimulating activities before bedtime, or use of electronics in the bedroom. Encourage the patient to recognize these behaviors and understand how they may negatively impact sleep quality. Use this opportunity to educate the patient on the effects of these habits and begin to explore changes that could lead to improved sleep hygiene and better sleep quality.",
+        "Treatment Goals Establishment": "Work collaboratively with the patient to establish realistic and achievable treatment goals based on the comprehensive assessment findings. Discuss what the patient hopes to accomplish through treatment and align these expectations with practical strategies and interventions. Ensure these goals are specific, measurable, and tailored to the individual's needs, considering their lifestyle, sleep patterns, and any comorbid conditions. Regularly revisit and adjust these goals as needed to reflect the patient's progress and any new insights gained during therapy."
     }
 
 
@@ -360,11 +349,12 @@ if __name__ == "__main__":
     initialize_goal_progress(len(goals))
     current_goal_index = 0
 
-    initial_patient_message = get_patient_response("Hello, Iam ready for third session", [])
+    initial_patient_message = get_patient_response("Hello, I have trouble falling asleep", [])
     print(f"\n{GREEN}Patient:{RESET}")
     for paragraph in initial_patient_message.split('\n'):
         print(textwrap.fill(paragraph, width=70))
     messages.append({"role": "user", "content": initial_patient_message})
+
 
     therapist_message = chat_with_gpt(messages)
     print(f"\n{YELLOW}Therapist:{RESET}")
@@ -373,6 +363,7 @@ if __name__ == "__main__":
     messages.append({"role": "assistant", "content": therapist_message})
 
     while True:
+
         patient_response = get_patient_response(therapist_message, messages)
         print(f"\n{GREEN}Patient:{RESET}")
         for paragraph in patient_response.split('\n'):
@@ -395,6 +386,7 @@ if __name__ == "__main__":
                     print(f"{condition}: {status}")
                 else:
                     print(f"{condition}: {'True' if status else 'False'}")
+
             if current_goal_index < len(goals):
                 if goal_stagnant_count[current_goal_index] >= MAX_STAGNANT_ROUNDS:
                     print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' skipped due to stagnation.{RESET}")

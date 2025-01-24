@@ -3,13 +3,12 @@ import textwrap
 import concurrent.futures
 import threading
 from typing import List
-from Aspect_Critics_Eval_LLM import AspectCritic
-from Goal_Accuracy_Eval_LLM import ConversationEvaluator
-from Length_Eval import length_checker
-from Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
-from Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
+from LLM_Based_Evaluators.Aspect_Critics_Eval_LLM import AspectCritic
+from LLM_Based_Evaluators.Goal_Accuracy_Eval_LLM import ConversationEvaluator
+from Non_LLM_Evaluators.Length_Eval import length_checker
+from LLM_Based_Evaluators.Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
+from LLM_Based_Evaluators.Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
 import time
-
 
 openai.api_key = "your-api-key-here"
 
@@ -18,36 +17,42 @@ YELLOW = '\033[93m'
 RESET = '\033[0m'
 BLUE = '\033[94m'
 
-PATIENT_PROFILE = """You are a 60-year-old accountant continuing sleep therapy after your first session.
+PATIENT_PROFILE = """You are a 60-year-old accountant in your final sleep therapy session.
 
-Communication style:
-- Keep responses focused and concise (2-3 sentences)
-- Share one specific example when relevant
-- Express concerns briefly but clearly
-- If something is unclear, ask one focused question
-- Describe only the most relevant details
-- Stay on the current topic
+Response rules:
+- Keep responses to 2-3 short paragraphs
+- Share one specific example when asked
+- Focus on one main point at a time
+- Be direct and specific
+- No long explanations
 
-Current status:
-- Completed 2 weeks of sleep diary
-- Starting to understand relationship between daily activity and sleep quality
-- Some improvement in CPAP use but still removing mask during sleep
-- Trying to increase activity level and spend more time with grandchildren
+Progress made:
+- Sleep efficiency stable at 89%
+- Regular 7.5-hour sleep schedule (11:00 PM - 6:30 AM)
+- Successfully discontinued zolpidem after 18 years
+- Using CPAP consistently all night
+- Sleeping well with wife in shared bedroom
+- Regular visits with grandchildren
+- Improved daytime energy
+- Less preoccupation with sleep
+- Better pain management with activity pacing
 
-Current challenges:
-- Taking 55-80 minutes to fall asleep
-- Waking 1-3 times during night, sometimes staying awake up to 2 hours
-- Early morning awakening (around 5:00-6:00am)
-- Dozing off unintentionally when reclining during day
-- Sleeping in separate room from wife due to her snoring
-- Pain symptoms affecting sleep
-- Taking zolpidem 7.5mg nightly for past 18 years
-- Concerns about managing sleep without medication
+Current focus:
+- Maintaining improvements independently
+- Managing occasional sleep anxiety 
+- Planning for pain flare-ups
+- Building confidence as a sleeper
+- Balancing activity and rest
+- Keeping CPAP adherence high
+- Weekend schedule consistency
 
 Medical conditions:
 - Fibromyalgia (on duloxetine and gabapentin)
 - Mild to moderate sleep apnea using CPAP
-- Features of depression but not meeting full criteria"""
+- Features of depression improving with sleep
+
+answer so so long  at least 2 paragraph
+"""
 
 
 class LazyEvaluator:
@@ -61,10 +66,7 @@ class LazyEvaluator:
         return self.instance
 
 
-
-
 def chat_with_gpt(messages, model="gpt-4o", max_retries=5):
-
     retry_count = 0
     while retry_count < max_retries:
         try:
@@ -275,62 +277,66 @@ if __name__ == "__main__":
 
     messages = [
         {"role": "system",
-         "content": """You are a sleep therapy expert focused on behavioral strategies for insomnia management.
-            Communication requirements:
-            - Ask ONE clear question at a time
-            - Focus on the most pressing issue first
-            - Avoid repeating information
-            - If providing advice, limit to 2-3 key points
-            - Skip general statements about sleep unless directly relevant
-            - Avoid unnecessary acknowledgments or wrap-up statements
-            - Focus only on the immediate topic or concern
-            - If listing options or steps, limit to the most important ones
-            
-            Session objectives:
-            - Introduce Stimulus Control and Sleep Restriction Therapy
-            - Guide patient on bedtime/wake-up scheduling
-            - Strengthen bed-sleep association
-            - Address implementation challenges"""
-                    }
+         "content": """You are a sleep therapy expert conducting the final consolidation session.
+
+    Response requirements:
+    - Ask ONE clear question at a time
+    - Keep responses to 2-3 sentences
+    - Focus on maintenance strategies
+    - Address specific challenges
+    - Guide toward independence
+
+    Session goals:
+    - Review key improvements
+    - Fine-tune strategies
+    - Build self-management skills
+    - Address remaining issues
+    - Plan for long-term success
+
+    Guidelines:
+    - Direct and focused responses
+    - No lengthy explanations
+    - Practical, actionable advice
+    - Work toward closure"""}
     ]
 
     goal_names = [
-        "Addressing Common Sleep Misconceptions",
-        "Determining Initial Sleep Window",
-        "Stimulus Control Explanation",
-        "Rules of Stimulus Control",
-        "Sleep Restriction Therapy Description",
-        "Combining Stimulus Control and Sleep Restriction",
-        "Assess Patient Understanding and Commitment",
-        "Dealing with Common Obstacles",
-        "Adjusting Recommendations Based on Feedback",
-        "Monitoring Progress and Modifying Techniques"
+        "Assessment of Treatment Readiness",
+        "Detailed Case Conceptualization",
+        "Case Conceptualization Form Simulation",
+        "Understanding Comorbidities",
+        "Therapeutic Component Selection",
+        "Flexibility in Treatment Application",
+        "Individual Tailoring",
+        "Anticipation of Adherence Challenges",
+        "Sequential Treatment Implementation",
+        "Evaluation of Treatment Effectiveness"
     ]
 
     goals = [
-        "The model should proactively address common misconceptions about sleep and sleep needs, such as the myth that everyone needs 8 hours of sleep, to set realistic expectations for therapy.",
-        "The model must instruct the patient on how to determine their initial sleep window for sleep restriction based on a sleep diary, explaining how to calculate sleep efficiency and adjust the sleep window accordingly.",
-        "The Model should articulate what stimulus control is and why it's used in treating insomnia. It must explain that this approach helps patients associate the bed and bedroom with sleep and not with wakefulness or other activities.",
-        "The Model should explain the rules of stimulus control, such as only going to bed when sleepy, not using the bed for activities other than sleep and sex, getting out of bed if unable to sleep within about 20 minutes, and maintaining a regular morning wake-up time regardless of sleep duration the previous night.",
-        "The Model must clearly describe how to implement sleep restriction therapy. It should guide the patient to limit their time in bed to closely match the total amount of time they usually sleep, to increase the pressure to sleep and enhance sleep efficiency.",
-        "The Model should illustrate how to effectively combine stimulus control and sleep restriction. This includes practical guidance on adjusting bedtime and wake-up time based on a sleep diary and responding to difficulties the patient might encounter.",
-        "Throughout the conversation, the Model must assess whether the patient understands the techniques and is committed to applying them. It should answer any questions and address concerns to ensure patient compliance and optimize therapy outcomes.",
-        "The Model should offer examples and practical tips for dealing with common obstacles in implementing these therapies, such as what to do when one cannot fall asleep or how to manage the urge to stay in bed longer.",
-        "The model should demonstrate the ability to adjust recommendations based on the patient’s feedback, such as difficulties in implementing strategies, unexpected wakefulness, or variations in sleep patterns observed in the sleep diary.",
-        "An essential goal for the model is to guide the patient in monitoring their progress through a sleep diary and modifying sleep restrictions or stimulus control techniques based on this ongoing assessment."
+        "The therapy session should assess the patient’s readiness for change, determining their willingness to adopt new sleep behaviors. This is critical for effectively timing and implementing interventions.",
+        "Beyond the use of a form, the therapy should involve a detailed conceptualization that considers factors like life stressors, environmental influences, and personal habits that affect sleep.",
+        "The session should simulate the use of a case conceptualization form to systematically organize and guide the treatment process, considering sleep habits, comorbidities, and behavioral factors.",
+        "The model should demonstrate understanding of the impact of various comorbidities on insomnia and incorporate this knowledge into therapy suggestions.",
+        "The session should reflect thoughtful selection of CBT-I components that are most appropriate to the patient’s case, considering readiness for change, obstacles, and the patient’s sleep environment.",
+        "The therapy should adjust the standard CBT-I protocol to fit the patient’s specific situation, such as modifying techniques for comorbid conditions like anxiety or depression.",
+        "The treatment should be tailored to the individual patient’s symptoms and history, using patient-specific information to guide the conversation and interventions.",
+        "The model should anticipate potential adherence challenges, discussing strategies to overcome these barriers, motivating the patient, and setting realistic expectations.",
+        "It should effectively sequence treatment interventions, ensuring that each component builds on the previous one and corresponds to the patient’s evolving therapeutic needs.",
+        "The model should evaluate the effectiveness of implemented treatments, incorporating patient feedback and adjusting the plan as necessary to ensure optimal outcomes."
     ]
 
     goal_specific_prompts = {
-        "Addressing Common Sleep Misconceptions": "Initiate the session by exploring common sleep myths with the patient, such as the universal need for 8 hours of sleep. Provide evidence-based explanations that individual sleep needs vary and discuss how adherence to such myths can heighten sleep-related anxiety. Educate the patient on identifying their unique sleep patterns and requirements, emphasizing the importance of listening to their own body rather than adhering to general misconceptions.",
-        "Determining Initial Sleep Window": "Guide the patient on starting a sleep diary to meticulously track their bedtime, wake time, and total sleep duration for at least two weeks. Explain the calculation of sleep efficiency by dividing the total sleep time by the time spent in bed. Use this data to determine their initial sleep window, ensuring it closely aligns with the sleep duration logged in the diary, thus setting a foundation for effective sleep restriction therapy.",
-        "Stimulus Control Explanation": "Educate the patient on stimulus control therapy by discussing its fundamental purpose: to reassociate the bed and bedroom with sleep and disassociate them from wakefulness and other activities. Explain the psychological mechanism behind stimulus control, detailing how these practices help diminish the conditioned arousal associated with the sleep environment.",
-        "Rules of Stimulus Control": "Clearly articulate the specific rules of stimulus control: going to bed only when sleepy, avoiding all non-sleep activities in bed, such as eating, reading, or watching TV, leaving the bed if unable to sleep within 20 minutes, and maintaining a consistent wake-up time. Explain the rationale behind each rule and how it contributes to reconditioning the body's sleep-wake cycle.",
-        "Sleep Restriction Therapy Description": "Describe sleep restriction therapy in detail, outlining its goal to limit the patient’s time in bed to match their actual sleep duration as recorded in the sleep diary. Discuss the concept of sleep drive and how restricting time in bed can intensify this drive, thereby consolidating sleep and reducing nighttime awakenings.",
-        "Combining Stimulus Control and Sleep Restriction": "Discuss how to effectively combine stimulus control with sleep restriction. Guide the patient on adjusting their sleep window based on diary observations and discuss how to systematically delay bedtime or advance wake time to optimize sleep efficiency. Emphasize the iterative nature of this process and the need for regular adjustments based on the patient’s feedback and sleep diary data.",
-        "Assess Patient Understanding and Commitment": "Continuously engage the patient to assess their understanding of and commitment to the sleep therapy techniques. Use questioning strategies to elicit detailed responses about their experiences, challenges, and any resistance they may feel towards the prescribed sleep practices. Reinforce the importance of their active participation and adjustment in response to therapy outcomes.",
-        "Dealing with Common Obstacles": "Prepare the patient for common challenges they may encounter during the implementation of sleep therapies, such as the urge to stay in bed during wakeful periods or dealing with the anxiety of not sleeping. Provide specific, actionable strategies to overcome these obstacles, such as relaxation techniques, the use of a 'worry journal,' or engaging in quiet, non-stimulating activities out of bed.",
-        "Adjusting Recommendations Based on Feedback": "Show flexibility in treatment by adapting recommendations based on the patient’s ongoing feedback. Discuss any new sleep disturbances or the patient’s experiences with the current strategies. Adjust the treatment plan dynamically, ensuring it remains aligned with the patient’s needs and sleep patterns as they evolve.",
-        "Monitoring Progress and Modifying Techniques": "Instruct the patient on the importance of continually monitoring their progress through detailed sleep diaries. Review the entries together to identify patterns or shifts in sleep behavior. Discuss how to interpret these trends and make informed decisions on whether and how to modify sleep restrictions or control techniques, aiming for gradual improvement towards optimal sleep."
+        "Assessment of Treatment Readiness": "Begin the session by discussing the patient's past experiences and current perceptions about sleep and treatment. Assess their willingness and readiness to engage in therapy by exploring their motivations, hesitations, and previous attempts at managing their sleep issues. Explain how their commitment and active participation are crucial for the success of the therapy. Provide clear examples of how behavioral changes can positively impact sleep and ask for their thoughts on making such changes.",
+        "Detailed Case Conceptualization": "Use a structured approach to delve into the patient's personal history, sleep patterns, lifestyle choices, and environmental factors that may be influencing their sleep. This should include a discussion of stress levels, work-life balance, bedtime routines, and any other relevant psychosocial factors. Guide the patient through a detailed mapping of these elements and their interconnections to build a comprehensive understanding of their sleep disturbances. This conceptualization helps in identifying specific targets for intervention.",
+        "Case Conceptualization Form Simulation": "Introduce and collaboratively fill out a case conceptualization form, explaining each section such as sleep habits, comorbidities, emotional stressors, and behavioral factors. Engage the patient in a step-by-step discussion, encouraging them to provide input and reflect on how each aspect of their life contributes to their sleep issues. This exercise aims to make the patient an active participant in their treatment planning, enhancing their understanding and ownership of the therapeutic process.",
+        "Understanding Comorbidities": "Discuss in detail the comorbidities that might be impacting the patient's insomnia, such as anxiety, depression, chronic pain, or other medical conditions. Explore how these comorbidities interact with their sleep problems and how treating insomnia might also help manage these conditions. Explain the bidirectional nature of sleep and health issues to help the patient see the holistic importance of sleep improvement.",
+        "Therapeutic Component Selection": "Present and discuss various components of Cognitive Behavioral Therapy for Insomnia (CBT-I), such as stimulus control, sleep restriction, and cognitive restructuring. Explain how each component works and its benefits, and use the patient’s specific sleep issues and preferences to decide together which components to prioritize in the treatment plan. This personalized selection process helps ensure that the therapy is tailored to the patient's unique needs.",
+        "Flexibility in Treatment Application": "Prepare to adapt therapy techniques based on ongoing assessments and the patient’s evolving needs. Discuss potential adjustments like modifying sleep schedules or introducing relaxation techniques, explaining why and how these changes might help. This approach emphasizes flexibility and responsiveness, which are key in managing complex or changing sleep issues.",
+        "Individual Tailoring": "Focus on tailoring the therapy to fit the patient’s specific circumstances, including their daily schedule, personal life stresses, and sleep environment. Discuss how personalized interventions, such as adjusting the bedroom environment or customizing sleep/wake times, can make therapy more effective. Encourage the patient to give feedback on what feels most relevant and manageable for them.",
+        "Anticipation of Adherence Challenges": "Proactively discuss potential challenges that might impede adherence to the treatment plan, such as inconsistent schedules, motivation dips, or external stressors. Explore strategies to overcome these barriers, such as setting reminders, engaging support from family members, or adjusting goals to be more achievable. This discussion helps prepare the patient to handle difficulties throughout the treatment process.",
+        "Sequential Treatment Implementation": "Outline the planned sequence of therapeutic interventions, explaining how each step builds on the previous one to progressively improve sleep. Discuss the rationale behind the sequence, such as starting with sleep hygiene improvements and gradually introducing more intensive interventions like sleep restriction therapy. This methodical approach helps the patient understand the progression and purpose of each phase of therapy.",
+        "Evaluation of Treatment Effectiveness": "Regularly evaluate the effectiveness of the treatment through discussions with the patient about their sleep diary, symptom changes, and overall satisfaction with the progress. Use this feedback to make informed adjustments to the treatment plan, ensuring that it remains aligned with the patient's needs and goals. This ongoing evaluation fosters a dynamic and responsive therapeutic environment."
     }
 
 
@@ -363,7 +369,7 @@ if __name__ == "__main__":
     initialize_goal_progress(len(goals))
     current_goal_index = 0
 
-    initial_patient_message = get_patient_response("Hello, I am ready for second session", [])
+    initial_patient_message = get_patient_response("Hello, Iam ready for third session", [])
     print(f"\n{GREEN}Patient:{RESET}")
     for paragraph in initial_patient_message.split('\n'):
         print(textwrap.fill(paragraph, width=70))
@@ -398,7 +404,6 @@ if __name__ == "__main__":
                     print(f"{condition}: {status}")
                 else:
                     print(f"{condition}: {'True' if status else 'False'}")
-
             if current_goal_index < len(goals):
                 if goal_stagnant_count[current_goal_index] >= MAX_STAGNANT_ROUNDS:
                     print(f"{YELLOW}Goal '{goal_names[current_goal_index]}' skipped due to stagnation.{RESET}")
@@ -467,6 +472,7 @@ def wait_for_rate_limit_reset():
     print("\nWaiting 20 seconds for rate limits to reset...")
     time.sleep(20)
     print("Resuming...\n")
+
 
 print("\n" + "=" * 50)
 print(f"{BLUE}Final Independent Evaluation Results:{RESET}")

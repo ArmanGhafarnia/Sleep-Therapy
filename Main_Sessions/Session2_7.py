@@ -2,11 +2,11 @@ import openai
 import textwrap
 import concurrent.futures
 import threading
-from Aspect_Critics_Eval_LLM import AspectCritic
-from Goal_Accuracy_Eval_LLM import ConversationEvaluator
-from Length_Eval import length_checker
-from Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
-from Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
+from LLM_Based_Evaluators.Aspect_Critics_Eval_LLM import AspectCritic
+from LLM_Based_Evaluators.Goal_Accuracy_Eval_LLM import ConversationEvaluator
+from Non_LLM_Evaluators.Length_Eval import length_checker
+from LLM_Based_Evaluators.Stay_On_Track_Eval_LLM import evaluate_conversation_stay_on_track
+from LLM_Based_Evaluators.Topic_Adherence_Eval_LLM import TopicAdherenceEvaluator
 from fasthtml.common import *
 import asyncio
 from fasthtml.common import Raw
