@@ -54,28 +54,28 @@ class ConversationEvaluator:
         • Consider how thoroughly the goal was explored
 
         SCORING GUIDE:
-        0.35 - BASIC START
+        0.30 - BASIC START
         • Topic was brought up
         • Some relevant questions asked
         • Basic information gathered
 
-        0.55 - GOOD PROGRESS
+        0.50 - GOOD PROGRESS
         • Active discussion of the topic
         • Relevant details collected
         • Patient engaged in conversation
         • Clear direction established
 
-        0.75 - STRONG PROGRESS
+        0.70 - STRONG PROGRESS
         • Detailed exploration
         • Patient actively participating
         • Multiple aspects covered
         • Good insights gained
 
-        0.90 - NEAR GOAL 
+        0.85 - NEAR GOAL 
         • Coverage of topic is nearly complete
         • 70% of Useful information gathered
 
-        1.00 - GOAL ACHIEVED
+        0.95 - GOAL ACHIEVED
         • Thorough coverage of topic
         • Most of Clear understanding established
         • Useful information gathered

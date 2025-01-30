@@ -297,7 +297,7 @@ def format_last_conversation_tuple(conversation_history):
 
 
 goal_progress = {}
-required_progress = 1.00
+required_progress = 0.95
 goal_stagnant_count = {}
 MAX_STAGNANT_ROUNDS = 6
 

@@ -157,7 +157,7 @@ def format_last_conversation_tuple(conversation_history):
 
 
 goal_progress = {}
-required_progress = 1.00
+required_progress = 0.95
 goal_stagnant_count = {}
 MAX_STAGNANT_ROUNDS = 6
 
@@ -496,7 +496,7 @@ for check, result in results.items():
 
 print("\n3. Goal Accuracy Evaluation:")
 goal_evaluator = ConversationEvaluator(goals=goals, goal_names=goal_names)
-ACHIEVEMENT_THRESHOLD = 0.90
+ACHIEVEMENT_THRESHOLD = 0.85
 
 for i, (goal, goal_name) in enumerate(zip(goals, goal_names)):
     goal_score = goal_evaluator.check_goal_achieved(goal, final_conversation)
@@ -506,13 +506,13 @@ for i, (goal, goal_name) in enumerate(zip(goals, goal_names)):
 print("\n4. Topic Adherence Evaluation:")
 topic_evaluator = TopicAdherenceEvaluator()
 topic_score = topic_evaluator.evaluate_conversation(final_conversation)
-print(f"Topic Adherence Score: {topic_score:.2f}/1.00")
+print(f"Topic Adherence Score: {topic_score:.2f}/0.95")
 
 wait_for_rate_limit_reset()
 
 print("\n5. Stay on Track Evaluation:")
 stay_score, feedback = evaluate_conversation_stay_on_track(final_conversation)
-print(f"Stay on Track Score: {stay_score:.2f}/1.00")
+print(f"Stay on Track Score: {stay_score:.2f}/0.95")
 if feedback:
     print(f"Feedback: {feedback}")
 
