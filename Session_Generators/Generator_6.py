@@ -349,17 +349,10 @@ if __name__ == "__main__":
     initialize_goal_progress(len(goals))
     current_goal_index = 0
 
-    initial_patient_message = get_patient_response("Hello, I have trouble falling asleep", [])
-    print(f"\n{GREEN}Patient:{RESET}")
-    for paragraph in initial_patient_message.split('\n'):
-        print(textwrap.fill(paragraph, width=70))
+    initial_patient_message = get_patient_response("Hello", [])
     messages.append({"role": "user", "content": initial_patient_message})
 
-
     therapist_message = chat_with_gpt(messages)
-    print(f"\n{YELLOW}Therapist:{RESET}")
-    for paragraph in therapist_message.split('\n'):
-        print(textwrap.fill(paragraph, width=70))
     messages.append({"role": "assistant", "content": therapist_message})
 
     while True:
